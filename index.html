@@ -180,6 +180,31 @@
   @media(max-width:920px){.dkpis{grid-template-columns:repeat(3,1fr)}.panels{grid-template-columns:1fr}}
   @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}.dkpis{grid-template-columns:repeat(2,1fr)}.topbar .tt small{display:none}.bar-row .nm{width:92px}}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  /* buscadores y selección */
+  .reslist{margin-top:6px;max-height:230px;overflow:auto}
+  .skures{background:#0c1626;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
+  .skures:active{background:#16223c}
+  .skures b{font-size:13.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .skures span{font-size:11px;color:var(--mut)}
+  .skures.crear{color:var(--cyan);text-align:center;border-style:dashed}
+  .skures.muted{color:var(--mut2);text-align:center;cursor:default}
+  .chosen{margin-top:8px;background:#10213c;border:1px solid #2b4a7a;border-radius:11px;padding:11px 12px;font-size:14px;display:flex;align-items:center;gap:8px}
+  .chosen .xbtn{margin-left:auto;background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--mut);font-size:11px;padding:5px 9px;font-weight:700}
+  .skuline{background:#0c1626;border:1px solid var(--line);border-radius:12px;padding:10px 11px;margin-top:8px}
+  .skuline .top{display:flex;align-items:flex-start;gap:8px}
+  .skuline .nm{flex:1;min-width:0}.skuline .nm b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.skuline .nm span{font-size:10.5px;color:var(--mut)}
+  .skuline .rm{background:transparent;border:none;color:var(--rose);font-size:15px;font-weight:800;flex:none}
+  .skuline .ins{display:flex;gap:8px;align-items:flex-end;margin-top:8px}
+  .skuline .ins .grp{flex:1;min-width:0}
+  .skuline .ins label{display:block;font-size:10px;color:var(--mut);margin-bottom:4px}
+  .skuline .ins input{width:100%;background:#0a1320;border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 9px;font-size:14px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+  .skuline .ins input:focus{border-color:var(--blue);outline:none}
+  .skuline .lt{font-weight:800;color:var(--emerald);font-size:14px;min-width:76px;text-align:right;font-variant-numeric:tabular-nums;padding-bottom:9px}
+  .appbtns{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  .appbtn{background:linear-gradient(180deg,var(--surf),#101a2e);border:1px solid var(--line);border-radius:14px;padding:14px 10px;font-weight:700;font-size:13px;color:var(--txt);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;line-height:1.2}
+  .appbtn .em{font-size:21px}.appbtn:active{background:#16223c}
+  .daterow{display:flex;gap:8px}.daterow .grp{flex:1;min-width:0}
+  .report{background:#0c1626;border:1px solid var(--line);border-radius:14px;padding:16px;white-space:pre-wrap;font-size:12.8px;line-height:1.65;font-variant-numeric:tabular-nums;margin-top:6px;max-height:50vh;overflow:auto}
 </style>
 </head>
 <body>
@@ -188,12 +213,12 @@
   <div class="card-login">
     <div class="brand"><div class="logo">T</div><div><b>TRANSFER</b><small>Kenvue · Llamadas</small></div></div>
     <p class="login-sub">Las llamadas se inician desde la app. El tiempo se registra solo y el equipo queda bajo control de integridad.</p>
-    <label class="fl" for="u">Usuario</label><input id="u" class="fld" autocomplete="off" placeholder="TRANS1 · ADMIN"/>
+    <label class="fl" for="u">Usuario</label><input id="u" class="fld" autocomplete="off" placeholder="TRANSFERSUR2 · ADMIN"/>
     <label class="fl" for="p">Contraseña</label><input id="p" class="fld" type="password" placeholder="••••••"/>
     <div class="err" id="loginErr"></div>
     <button class="btn-primary" onclick="doLogin()">Entrar</button>
     <button class="install-btn hide" id="installBtn" onclick="doInstall()">⬇ Instalar app en este equipo</button>
-    <div class="hint"><b>Demo</b> · Transferencistas <b>TRANS1</b>…<b>TRANS7</b> (clave = mismo usuario). Administrador <b>ADMIN</b> / <b>ADMIN123$</b>.</div>
+    <div class="hint"><b>Usuarios</b> · TRANSFERSUR2 · TRANSFERNORTE · TRANSFERSENIOR1 · TRANSFERSENIOR2 (clave = mismo usuario). Administrador <b>ADMIN</b> / <b>ADMIN123$</b>.</div>
   </div>
 </div>
 
@@ -211,24 +236,192 @@
 <script>
 /* ===== DATOS ===== */
 var USERS=[
-  {id:'ADMIN',name:'Sebastián Pereyra',role:'admin',pass:'ADMIN123$'},
-  {id:'TRANS1',name:'Lucía Ramírez',role:'trans',pass:'TRANS1'},
-  {id:'TRANS2',name:'Diego Flores',role:'trans',pass:'TRANS2'},
-  {id:'TRANS3',name:'Carmen Quispe',role:'trans',pass:'TRANS3'},
-  {id:'TRANS4',name:'José Huamán',role:'trans',pass:'TRANS4'},
-  {id:'TRANS5',name:'Andrea Salazar',role:'trans',pass:'TRANS5'},
-  {id:'TRANS6',name:'Renzo Castro',role:'trans',pass:'TRANS6'},
-  {id:'TRANS7',name:'Patricia Vega',role:'trans',pass:'TRANS7'}
+  {id:'ADMIN',name:'Milagros Chavez',role:'admin',pass:'ADMIN123$'},
+  {id:'TRANSFERSUR2',name:'TRANSFERSUR2',role:'trans',pass:'TRANSFERSUR2'},
+  {id:'TRANSFERNORTE',name:'TRANSFERNORTE',role:'trans',pass:'TRANSFERNORTE'},
+  {id:'TRANSFERSENIOR1',name:'TRANSFERSENIOR1',role:'trans',pass:'TRANSFERSENIOR1'},
+  {id:'TRANSFERSENIOR2',name:'TRANSFERSENIOR2',role:'trans',pass:'TRANSFERSENIOR2'}
 ];
-var CLIENTS=['Tambo','Mass','Listo','Oxxo','Repshop','Tottus','Plaza Vea','Metro','Vivanda','Mifarma','Inkafarma','Economax'];
-var CLIENT_TEL={Tambo:'012005700',Mass:'016193000',Listo:'017121515',Oxxo:'013115000',Repshop:'016301000',
-  Tottus:'016133000','Plaza Vea':'016250000',Metro:'016134000',Vivanda:'016133800',Mifarma:'016196000',Inkafarma:'013144040',Economax:'016133900'};
-var SKUS=[
-  {nm:'Neko Antibacterial 125g',precio:2.50},{nm:'Neko Avena 125g',precio:2.70},{nm:'Neko Glicerina 125g',precio:2.90},
-  {nm:'Listerine Cool Mint 250ml',precio:12.90},{nm:'Listerine Zero 500ml',precio:21.50},
-  {nm:"Johnson's Baby Shampoo 200ml",precio:14.90},{nm:"Johnson's Baby Oil 200ml",precio:16.50},
-  {nm:'Neutrogena Facial 100ml',precio:25.90},{nm:'Band-Aid x10',precio:4.50},{nm:'Listerine Display x12',precio:148.00}
-];
+var DEMO_CLIENTS=['BODEGA CENTRAL','MINIMARKET SUR','TIENDA LA ESQUINA','MARKET EL SOL','BODEGA SAN JOSE'];
+var SKUS=[{ean:"7702031338260",nm:"Shampoo Manzanilla Display x 25ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293217",nm:"Shampoo Manzanilla x 100ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031338574",nm:"Shampoo Original Display x 25ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031291534",nm:"Shampoo Original x 100ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031132844",nm:"Aceite Original x 50ml",cat:"Baby Toiletries",sub:"Baby Oil",marca:"Johnson's Baby"},
+{ean:"7702031902997",nm:"Jabón Baby Avena x 75gr",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7891010035976",nm:"Jabón Baby Glicerina x 80gr",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031902935",nm:"Jabón Baby Humectante x 75gr",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031902959",nm:"Jabón Baby Original x 75gr",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031245292",nm:"Neko Extra Protección x 75gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245322",nm:"Neko Extra Suave x 75gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245261",nm:"Neko Avena x 75gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245230",nm:"Neko Aloe x 75gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245353",nm:"Neko Fresh x 75gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245285",nm:"Neko Extra Protección x 110gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245315",nm:"Neko Extra Suave x 110gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245254",nm:"Neko Avena x 110gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245223",nm:"Neko Aloe x 110gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245346",nm:"Neko Fresh x 110gr",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031800682",nm:"Stayfree Especial x 12u",cat:"Napkins",sub:"Thick Pads",marca:"Siempre Libre"},
+{ean:"7702035432117",nm:"Listerine Cool Mint x 180ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031563327",nm:"Listerine Cool Mint Zero x 180ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031407393",nm:"Jabón Adultos Original x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031407423",nm:"Jabón Adultos Avena x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031293231",nm:"Shampoo Manzanilla x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293248",nm:"Shampoo Manzanilla x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031291565",nm:"Shampoo Original x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031291510",nm:"Shampoo Original x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031734628",nm:"Aceite Antes de Dormir x 100ml",cat:"Baby Toiletries",sub:"Baby Oil",marca:"Johnson's Baby"},
+{ean:"7891010031046",nm:"Aceite Original x 100ml",cat:"Baby Toiletries",sub:"Baby Oil",marca:"Johnson's Baby"},
+{ean:"7891010037246",nm:"Polvo Almidon Original x 100gr",cat:"Baby Toiletries",sub:"Baby Powder",marca:"Johnson's Baby"},
+{ean:"7702031580010",nm:"Stayfree Especial x 42u",cat:"Napkins",sub:"Thick Pads",marca:"Siempre Libre"},
+{ean:"7702035833815",nm:"Listerine Total Care x 180ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031887911",nm:"Listerine Total Care Zero x 180ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7750021009201",nm:"Shampoo Original x 750ml + 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7750021009218",nm:"Shampoo Manzanilla x 750ml + 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293521",nm:"Shampoo Fragancia Prolongada x200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293538",nm:"Shampoo Fragancia Prolongada x400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293347",nm:"Shampoo Fragancia Prolongada x750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293613",nm:"Shampoo Fuerza y Vitamina x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293620",nm:"Shampoo Fuerza y Vitamina x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293637",nm:"Shampoo Fuerza y Vitamina x 750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293644",nm:"Shampoo Gotas de Brillo x 1000ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293354",nm:"Shampoo Gotas de Brillo x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293361",nm:"Shampoo Gotas de Brillo x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293378",nm:"Shampoo Gotas de Brillo x 750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293576",nm:"Shampoo Hidratación Intensa x 1000ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293194",nm:"Shampoo Hidratación Intensa x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293330",nm:"Shampoo Hidratación Intensa x 750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293484",nm:"Shampoo Manzanilla x 1000ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293255",nm:"Shampoo Manzanilla x 750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293514",nm:"Shampoo Original x 1000ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031291527",nm:"Shampoo Original x 750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293279",nm:"Shampoo Romero y Melanina x 750ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031734611",nm:"Aceite Antes de Dormir x 300ml",cat:"Baby Toiletries",sub:"Baby Oil",marca:"Johnson's Baby"},
+{ean:"7891010037024",nm:"Aceite Original x 300ml",cat:"Baby Toiletries",sub:"Baby Oil",marca:"Johnson's Baby"},
+{ean:"7702031293583",nm:"Acondicionador Fuerza y Vitamina x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293415",nm:"Acondicionador Gotas de Brillo x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293422",nm:"Acondicionador Gotas de Brillo x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293446",nm:"Acondicionador Hidratación Int x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293323",nm:"Acondicionador Manzanilla x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031293439",nm:"Acondicionador Original x 400ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031318453",nm:"Baño Líquido Avena x 400ml",cat:"Baby Toiletries",sub:"BabyCleansers ex Softwash",marca:"Johnson's Baby"},
+{ean:"7702031318293",nm:"Baño Líquido Glicerina x 200ml",cat:"Baby Toiletries",sub:"BabyCleansers ex Softwash",marca:"Johnson's Baby"},
+{ean:"7702031318316",nm:"Baño Líquido Glicerina x 400ml",cat:"Baby Toiletries",sub:"BabyCleansers ex Softwash",marca:"Johnson's Baby"},
+{ean:"7702031318538",nm:"Baño Líquido Hidratación Intensa x 400ml",cat:"Baby Toiletries",sub:"BabyCleansers ex Softwash",marca:"Johnson's Baby"},
+{ean:"7702031338789",nm:"Baño Líquido Recién Nacido x 200ml",cat:"Baby Toiletries",sub:"BabyCleansers ex Softwash",marca:"Johnson's Baby"},
+{ean:"7702031514992",nm:"Colonia Sonrisas (Amarilla) x 100ml",cat:"Baby Toiletries",sub:"Baby Cologne",marca:"Johnson's Baby"},
+{ean:"7702031515203",nm:"Colonia Sonrisas (Amarilla) x 200ml",cat:"Baby Toiletries",sub:"Baby Cologne",marca:"Johnson's Baby"},
+{ean:"7702031036746",nm:"Crema Líquida Antes de Dormir x 200ml",cat:"Baby Toiletries",sub:"Baby Lotion/Cream ex Soft",marca:"Johnson's Baby"},
+{ean:"7702031169536",nm:"Crema Líquida Avena x 400ml",cat:"Baby Toiletries",sub:"Baby Lotion/Cream ex Soft",marca:"Johnson's Baby"},
+{ean:"7891010037185",nm:"Crema Líquida Original (Rosa) x 200ml",cat:"Baby Toiletries",sub:"Baby Lotion/Cream ex Soft",marca:"Johnson's Baby"},
+{ean:"7891010037192",nm:"Crema Líquida Original (Rosa) x 400ml",cat:"Baby Toiletries",sub:"Baby Lotion/Cream ex Soft",marca:"Johnson's Baby"},
+{ean:"7702031338772",nm:"Crema Líquida Recién Nacido x 200ml",cat:"Baby Toiletries",sub:"Baby Lotion/Cream ex Soft",marca:"Johnson's Baby"},
+{ean:"7702031878452",nm:"Crema para Peinar Hidratación Int x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031407287",nm:"Jabón Baby Avena x 110gr (Tripack)",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031401049",nm:"Jabón Baby Humectante x 110gr",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031407225",nm:"Jabón Baby Humectante x 110gr (Tripack)",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031401032",nm:"Jabón Baby Original x 110gr",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031407263",nm:"Jabón Baby Original x 110gr (Tripack)",cat:"Baby Toiletries",sub:"Baby Bar Soaps",marca:"Johnson's Baby"},
+{ean:"7702031244455",nm:"Pack Estuche Grande (nuevo)",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031583363",nm:"Pack Estuche Pequeño",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7891010919221",nm:"Loción Anti Mosquitos x 200ml",cat:"Baby Toiletries",sub:"Baby Lotion/Cream ex Soft",marca:"Johnson's Baby"},
+{ean:"7702031998174",nm:"Spray Fragancia Prolongada x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031413462",nm:"Spray Fuerza y vitamina x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031604143",nm:"Spray Gotas de Brillo x 200ml",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031038207",nm:"Polvo Almidon Antes de Dormir x 200gr",cat:"Baby Toiletries",sub:"Baby Powder",marca:"Johnson's Baby"},
+{ean:"7891010099961",nm:"Polvo Almidon Antes de Dormir x 400gr",cat:"Baby Toiletries",sub:"Baby Powder",marca:"Johnson's Baby"},
+{ean:"7891010032241",nm:"Polvo Almidon Original x 200gr",cat:"Baby Toiletries",sub:"Baby Powder",marca:"Johnson's Baby"},
+{ean:"7891010037253",nm:"Polvo Almidon Original x 400gr",cat:"Baby Toiletries",sub:"Baby Powder",marca:"Johnson's Baby"},
+{ean:"7702031245520",nm:"Shampoo x 100ml Jetpack + Polvo de Almidon",cat:"Baby Hair",sub:"Baby Hair Care",marca:"Johnson's Baby"},
+{ean:"7702031245278",nm:"Neko Extra Protección x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245308",nm:"Neko Extra Suave x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245247",nm:"Neko Avena x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245216",nm:"Neko Aloe x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7702031245339",nm:"Neko Fresh x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Neko",marca:"Neko"},
+{ean:"7891010025878",nm:"Stayfree Adapt Plus Noche y Día x 8u",cat:"Napkins",sub:"Thick Pads",marca:"Siempre Libre"},
+{ean:"7702035432339",nm:"Listerine Cool Mint x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035432506",nm:"Listerine Cool Mint x 1000ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031518648",nm:"Listerine Cool Mint Zero x 1500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031518631",nm:"Listerine Cool Mint Zero x 1000ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7891010974336",nm:"Listerine Cool Mint Zero x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035430090",nm:"Listerine Antisarro x 180ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035432445",nm:"Listerine Antisarro x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035458971",nm:"Listerine Antisarro x 1000ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035833839",nm:"Listerine Total Care x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035833846",nm:"Listerine Total Care x 1000ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702035422323",nm:"Listerine Dientes & Encías x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031887942",nm:"Listerine Total Care Zero x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031887973",nm:"Listerine Total Care Zero x 1500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031976387",nm:"Listerine Anticaries Zero x 180ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031976493",nm:"Listerine Anticaries Zero x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031976509",nm:"Listerine Anticaries Zero x 1500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031288350",nm:"Listerine Antisarro Zero x 500ml",cat:"Mouthwashes",sub:"Listerine Adult Mouthwash",marca:"Listerine"},
+{ean:"7702031618737",nm:"Listerine Whitening x 236ml",cat:"Mouthwashes",sub:"Listerine Whitening Mouthwash",marca:"Listerine"},
+{ean:"7702031618744",nm:"Listerine Whitening x 473ml",cat:"Mouthwashes",sub:"Listerine Whitening Mouthwash",marca:"Listerine"},
+{ean:"7891010560737",nm:"Cotonetes x 75u",cat:"Baby Toiletries",sub:"Cotton Buds/Swabs",marca:"Cotonetes"},
+{ean:"7891010047764",nm:"Cotonetes x 300u",cat:"Baby Toiletries",sub:"Cotton Buds/Swabs",marca:"Cotonetes"},
+{ean:"7891010032937",nm:"Cotonetes Pote x 150u",cat:"Baby Toiletries",sub:"Cotton Buds/Swabs",marca:"Cotonetes"},
+{ean:"7891010038908",nm:"Hilo Dental Reach Menta x 50mts",cat:"Floss",sub:"Floss/Tape",marca:"Reach"},
+{ean:"7891010038892",nm:"Hilo Dental Reach Regular x 50mts",cat:"Floss",sub:"Floss/Tape",marca:"Reach"},
+{ean:"7891010501105",nm:"Hilo Dental Reach Menta x 100mts",cat:"Floss",sub:"Floss/Tape",marca:"Reach"},
+{ean:"7702031310914",nm:"NTG Body Gel Cream Hydro Boost x 400ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7702031399858",nm:"NTG Body Gel Cream Hydro Boost x 200ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"70501013007",nm:"NTG NWG para Manos Noruega x 56gr",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010099480",nm:"NTG Body Revitalizing x 200ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010099473",nm:"NTG Body Intensive Extra Care x 200ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010941901",nm:"NTG Body Intensive Extra Care x 400ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010921194",nm:"NTG Body Intensive Confort x 200ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010871253",nm:"NTG Body Intensive Confort x 400ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010253905",nm:"NTG Body Hidrata y Repara x 400ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"7891010253257",nm:"NTG Body Hidrata y Revitaliza x 400ml",cat:"Hand Body & Foot Moisturising",sub:"Neutrogena Body",marca:"Neutrogena"},
+{ean:"70501050651",nm:"NTG Desmaquillante de Ojos Oil Free x 162ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"70501051054",nm:"NTG Toallitas Desmaquillantes Blue Line x 25u",cat:"Face Care",sub:"Neutrogena Wipes",marca:"Neutrogena"},
+{ean:"7891010704490",nm:"NTG Exfoliante Deep Clean Energizing x 100gr",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"70501053553",nm:"NTG Toallitas Desmaquillantes Night Calming x 25u",cat:"Face Care",sub:"Neutrogena Wipes",marca:"Neutrogena"},
+{ean:"7891010009250",nm:"NTG Gel Facial Deep Clean x 150gr",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010599614",nm:"NTG Gel Facial Ultra Gentle x354ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010245214",nm:"NTG Purified Skin Cleanser x150gr",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010245191",nm:"NTG Purified Skin Srub x100gr",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010245160",nm:"NTG Agua Micelar Purified Skin 7 en 1 x 200ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010251048",nm:"NTG Agua Micelar Hydro Boost x 200ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010253066",nm:"NTG Agua Micelar Purified Skin 7 en 1 x 400ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010251031",nm:"NTG Agua Micelar Bifásica x 200ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010251055",nm:"NTG Agua Micelar Hydro Boost x 400ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010255138",nm:"Neutrogena HYDROBOOST FPS25 6x40g",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010882990",nm:"NTG Humectante Hydro Boost Ojos x 15gr",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010882983",nm:"NTG Humectante Hydro Boost Water Gel Noche x 50gr",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010249861",nm:"NTG Lumen Bright Boost x 50gr",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010249878",nm:"NTG Lumen Bright Boost SPF 30 x 40gr",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010076238",nm:"NTG Gel Facial Spot Proofing x 200ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010097943",nm:"NTG Exfoliante Spot Proofing x 100gr",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"70501053652",nm:"NTG Gel Facial Pink Grapefruit x 177ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"70501053607",nm:"NTG Exfoliante Grapefruit x 124ml",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"70501013304",nm:"NTG Jabón Facial Anti Acné x 100gr",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"86800870333",nm:"NTG Wet Skin Kids Spray FPS70 x 141ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"86800870357",nm:"NTG Wet Skin Spray FPS50 x 141ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"86800873105",nm:"NTG Ultra Sheer FPS100 x 88ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"86800687702",nm:"NTG Ultra Sheer FPS70 x 88ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010591038",nm:"NTG Sunfresh Crema FPS50 x 200ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010591007",nm:"NTG Sunfresh Crema FPS70 x 200ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010591014",nm:"NTG Sunfresh Crema FPS70 x 120ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010669751",nm:"NTG Sunfresh Mousse FPS60 x 200ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010249090",nm:"NTG Sunfresh Crema FPS90 x 120ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010249106",nm:"NTG Sunfresh Crema FPS90 x 200ml",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010256159",nm:"Neutrogena Sun Fresh HB50 COR",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010256449",nm:"Neutrogena Sun Fresh HB50 S COR",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010256647",nm:"Neutrogena Niacinamida Serum 30ml",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010257064",nm:"NEUTROGENA SFRESH 50 DC OC SC 6X40ML ES",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010257071",nm:"NEUTROGENA SFRESH 50 DC OC C2 6X40ML ES",cat:"Sun Care",sub:"Neutrogena Suncare",marca:"Neutrogena"},
+{ean:"7891010257149",nm:"NEUTROGENA HB GEL CLEAN FRAGFREE 6X150ML",cat:"Face Care",sub:"Neutrogena cleansing",marca:"Neutrogena"},
+{ean:"7891010257323",nm:"NEUTROGENA RETINOL BOOST CREME 6X30ML ES",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7891010257316",nm:"NEUTROGENA RETINOL BOOST SR 01 6X30ML ES",cat:"Face Care",sub:"Neutrogena Face Moisturizer",marca:"Neutrogena"},
+{ean:"7702031407430",nm:"Jabón Adultos Rosas y Sándalo x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031407447",nm:"Jabón Adultos Renovadora Granada x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031407348",nm:"Jabón Adultos Refrescante Uva x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031414315",nm:"Jabón Adultos Antibacterial UF x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031414322",nm:"Jabón Adultos Antibacterial x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"},
+{ean:"7702031407416",nm:"Jabón Adultos Aloe x 110gr (Tripack)",cat:"Adult Bar Soaps",sub:"Body Cleansing Bar Soap",marca:"Johnson's Adult"}];
 var CAUSALES=['No contesta','Buzón de voz','Sin presupuesto','Ya cuenta con stock','Precio elevado','Pedir cita / reagendar','Encargado no disponible'];
 var CONTACTOS=['Sr. Quispe','Sra. Torres','Sr. Ramos','Sra. Díaz','Sr. Mendoza','Sra. Flores','Sr. Chávez','Sra. León','Sr. Rojas','Sra. Paredes'];
 
@@ -296,18 +489,19 @@ function genMobile(){return '9'+ri(10,99)+' '+ri(100,999)+' '+ri(100,999);}
 function addSecToTime(hhmmss,sec){var p=hhmmss.split(':');var t=(+p[0])*3600+(+p[1])*60+(+p[2])+sec;t%=86400;return secToFull(t);}
 
 /* ===== SEED ===== */
+function transIds(){var a=[];for(var i=0;i<USERS.length;i++)if(USERS[i].role==='trans')a.push(USERS[i].id);return a;}
 function seed(){
-  RECORDS=[];var now=new Date();
+  RECORDS=[];var now=new Date();var tids=transIds();
   for(var dback=29;dback>=0;dback--){
     var d=new Date();d.setDate(now.getDate()-dback);var fecha=ymd(d);
-    for(var u=1;u<=7;u++){
-      var tid='TRANS'+u;var n=(dback===0)?ri(4,10):ri(8,16);
+    for(var ui=0;ui<tids.length;ui++){
+      var tid=tids[ui];var n=(dback===0)?ri(4,10):ri(8,16);
       for(var c=0;c<n;c++){
         var dur=ri(35,560);var conecto=rnd()<0.82;var venta=conecto&&rnd()<0.5;var lineas=[],tot=0;
-        if(venta){var ns=ri(1,4);for(var s=0;s<ns;s++){var sk=pick(SKUS);var q=ri(1,12);var sub=+(sk.precio*q).toFixed(2);tot+=sub;lineas.push({nm:sk.nm,precio:sk.precio,cantidad:q,subtotal:sub});}}
+        if(venta){var ns=ri(1,4);for(var s=0;s<ns;s++){var sk=pick(SKUS);var q=ri(1,12);var pr=ri(2,25);var sub=+(pr*q).toFixed(2);tot+=sub;lineas.push({ean:sk.ean,nm:sk.nm,marca:sk.marca,precio:pr,cantidad:q,subtotal:sub});}}
         if(!conecto)dur=ri(8,30);
         var hi=pad(ri(8,18))+':'+pad(ri(0,59))+':'+pad(ri(0,59));
-        RECORDS.push({id:d.getTime()+'-'+tid+'-'+c,fecha:fecha,trans:tid,cliente:pick(CLIENTS),numero:genMobile(),
+        RECORDS.push({id:d.getTime()+'-'+tid+'-'+c,fecha:fecha,trans:tid,cliente:pick(DEMO_CLIENTS),numero:genMobile(),
           horaInicio:hi,horaFin:addSecToTime(hi,dur),durSec:dur,venta:venta,contacto:conecto?pick(CONTACTOS):'—',
           lineas:lineas,total:+tot.toFixed(2),
           causal:venta?'':(conecto?pick(['Sin presupuesto','Ya cuenta con stock','Precio elevado','Pedir cita / reagendar','Encargado no disponible']):pick(['No contesta','Buzón de voz']))});
@@ -449,9 +643,8 @@ function myToday(){var t=todayStr(),r=[];for(var i=0;i<RECORDS.length;i++)if(REC
 function renderApp(){
   var recs=myToday();var seg=0,ventas=0,ven=0;
   for(var i=0;i<recs.length;i++){seg+=recs[i].durSec;if(recs[i].venta){ven++;ventas+=recs[i].total;}}
-  var first=SESSION.name.split(' ')[0];
   var html='<div class="wrap">'+
-    '<div class="greet"><h1>Hola, '+first+'</h1><p>'+new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})+'</p>'+
+    '<div class="greet"><h1>Hola, '+SESSION.name+'</h1><p>'+new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})+'</p>'+
       '<span class="chip-ok"><span class="pulse"></span>Control de integridad activo</span></div>'+
     '<div class="kpis">'+
       '<div class="kpi accent"><div class="lab">Tiempo en llamadas</div><div class="val num">'+secToFull(seg)+'</div></div>'+
@@ -460,7 +653,11 @@ function renderApp(){
       '<div class="kpi green"><div class="lab">Soles</div><div class="val num">'+ventas.toFixed(0)+'<small> S/</small></div></div>'+
     '</div>'+
     '<div class="hero"><div class="hh">Inicia la llamada aquí. El número, la hora y la duración se registran automáticamente.</div>'+
-      '<button class="start-btn" onclick="openFlow()">☎ Iniciar llamada</button></div>'+
+      '<button class="start-btn" onclick="openFlow()">&#9742; Iniciar llamada</button></div>'+
+    '<div class="appbtns">'+
+      '<button class="appbtn" onclick="renderMiGestion()"><span class="em">&#128197;</span>Mi gestión</button>'+
+      '<button class="appbtn" onclick="renderCierre()"><span class="em">&#128228;</span>Compartir cierre del día</button>'+
+    '</div>'+
     '<div class="sec-title"><h2>Llamadas de hoy</h2><span class="badge">'+recs.length+' registradas</span></div>'+
     (recs.length?recs.map(callCard).join(''):'<div class="empty">Aún no registras llamadas hoy.<br>Pulsa <b>Iniciar llamada</b> para empezar.</div>')+
     '<button class="testlink" onclick="testIntegrity()">Probar alerta de integridad (demo)</button>'+
@@ -473,45 +670,66 @@ function testIntegrity(){
 }
 function callCard(r){
   var tag=r.venta?'<span class="tag sale">'+fmtS(r.total)+'</span>':'<span class="tag nosale">'+r.causal+'</span>';
-  return '<div class="call"><div class="ic">☎</div><div class="who"><b>'+r.cliente+'</b><span>'+telFmt(r.numero)+'</span>'+
-    '<div class="meta">'+r.horaInicio+' → '+r.horaFin+' · '+(r.contacto!=='—'?r.contacto:'sin contacto')+'</div>'+tag+'</div>'+
+  return '<div class="call"><div class="ic">&#9742;</div><div class="who"><b>'+r.cliente+'</b><span>'+telFmt(r.numero)+'</span>'+
+    '<div class="meta">'+r.horaInicio+' → '+r.horaFin+' · '+(r.contacto&&r.contacto!=='—'?r.contacto:'sin contacto')+'</div>'+tag+'</div>'+
     '<div class="rt"><div class="dur num">'+secToShort(r.durSec)+'</div></div></div>';
 }
 
+/* ===== CLIENTES (se guardan en el equipo del transferencista) ===== */
+var CLIENTS_DB=[];
+function clientsKey(){return 'transfer_cli_'+(SESSION?SESSION.id:'anon');}
+function loadClients(){CLIENTS_DB=[];try{var r=localStorage.getItem(clientsKey());if(r)CLIENTS_DB=JSON.parse(r)||[];}catch(e){CLIENTS_DB=[];}}
+function saveClients(){try{localStorage.setItem(clientsKey(),JSON.stringify(CLIENTS_DB));}catch(e){}}
+function addClient(nombre,cadena,numero){var c={id:'c'+Date.now(),nombre:(nombre||'').toUpperCase().trim(),cadena:(cadena||'').toUpperCase().trim(),numero:(numero||'').replace(/[^\d+]/g,'')};CLIENTS_DB.unshift(c);saveClients();return c;}
+function findClients(q){q=(q||'').toUpperCase().trim();var o=[];for(var i=0;i<CLIENTS_DB.length;i++){var c=CLIENTS_DB[i];if(!q||c.nombre.indexOf(q)>=0||(c.cadena&&c.cadena.indexOf(q)>=0))o.push(c);}return o;}
+
 /* ===== FLUJO LLAMADA ===== */
-function openFlow(){FLOW={step:1,cliente:'',numero:'',startTs:0,horaInicio:'',horaFin:'',durSec:0,venta:null,contacto:'',lineas:[],causal:''};renderFlow();}
+function openFlow(){loadClients();FLOW={step:1,cliente:'',cadena:'',numero:'',creating:false,newName:'',startTs:0,horaInicio:'',horaFin:'',durSec:0,venta:null,contacto:'',lineas:[],causal:''};renderFlow();}
 function closeFlow(){if(TIMER){clearInterval(TIMER);TIMER=null;}FLOW=null;var s=document.getElementById('sheet');if(s)s.remove();}
 function renderFlow(){var s=document.getElementById('sheet');if(s)s.remove();
   var div=document.createElement('div');div.className='sheet';div.id='sheet';
   div.innerHTML='<div class="sheet-inner">'+(FLOW.step===1?step1():FLOW.step===2?step2():step3())+'</div>';
   document.body.appendChild(div);}
+
 function step1(){
-  var opts='<option value="">Selecciona cadena / mini cadena…</option>';
-  for(var i=0;i<CLIENTS.length;i++)opts+='<option'+(FLOW.cliente===CLIENTS[i]?' selected':'')+'>'+CLIENTS[i]+'</option>';
-  var keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];var sub={'2':'ABC','3':'DEF','4':'GHI','5':'JKL','6':'MNO','7':'PQRS','8':'TUV','9':'WXYZ'};
-  var kp='';for(var k=0;k<keys.length;k++){if(keys[k]===''){kp+='<div></div>';continue;}
-    if(keys[k]==='⌫')kp+='<button class="key back" onclick="dialDel()">⌫</button>';
-    else kp+='<button class="key" onclick="dialPush(\''+keys[k]+'\')">'+keys[k]+'<small>'+(sub[keys[k]]||'')+'</small></button>';}
-  var disabled=(!FLOW.cliente||FLOW.numero.length<6);
-  return '<div class="step">Paso 1 de 3 · Marcar</div><h3>Nueva llamada</h3>'+
-    '<label class="fl">Cliente</label><select class="fld" id="selCli" onchange="onCli(this.value)">'+opts+'</select>'+
-    '<div class="dial-num num" id="dialNum">'+(FLOW.numero?telFmt(FLOW.numero):'<span style="color:var(--mut2)">—</span>')+'</div>'+
-    '<div class="dial-cli">'+(FLOW.cliente||'Selecciona el cliente para prellenar el número')+'</div>'+
-    '<div class="keypad">'+kp+'</div>'+
-    '<a class="btn-call" id="callBtn" aria-disabled="'+disabled+'" href="tel:'+FLOW.numero.replace(/\s/g,'')+'" onclick="startCall(event)">☎ Llamar e iniciar registro</a>'+
-    '<div class="meta-line"><span>Se registra automáticamente</span><span>número · inicio · fin · duración</span></div>';
+  if(FLOW.creating)return step1Crear();
+  return '<div class="step">Paso 1 de 3 · Cliente y llamada</div><h3>Nueva llamada</h3>'+
+    '<label class="fl">Cliente</label>'+
+    '<input class="fld" id="cliBuscar" autocomplete="off" placeholder="Escribe para buscar o crear" style="text-transform:uppercase" oninput="cliFilter(this.value)">'+
+    '<div id="cliResults" class="reslist"></div>'+
+    (FLOW.cliente?'<div class="chosen"><b>'+FLOW.cliente+'</b>'+(FLOW.cadena?' · '+FLOW.cadena:'')+'<button class="xbtn" onclick="cliClear()">cambiar</button></div>':'')+
+    '<label class="fl" style="margin-top:12px">Número a marcar</label>'+
+    '<input class="fld num" id="telInput" type="tel" inputmode="tel" placeholder="Número del cliente" value="'+(FLOW.numero||'')+'" oninput="FLOW.numero=this.value">'+
+    '<a class="btn-call" id="callBtn" href="#" onclick="startCall(event)">&#9742; Llamar e iniciar registro</a>'+
+    '<div class="meta-line"><span>La llamada se inicia desde la app</span><span>número · inicio · fin · duración</span></div>';
 }
-function onCli(v){FLOW.cliente=v;if(v&&CLIENT_TEL[v])FLOW.numero=CLIENT_TEL[v];renderFlow();}
-function dialPush(d){FLOW.numero=(FLOW.numero+d).slice(0,12);refreshDial();}
-function dialDel(){FLOW.numero=FLOW.numero.slice(0,-1);refreshDial();}
-function refreshDial(){document.getElementById('dialNum').innerHTML=FLOW.numero?telFmt(FLOW.numero):'<span style="color:var(--mut2)">—</span>';
-  var b=document.getElementById('callBtn');var dis=(!FLOW.cliente||FLOW.numero.length<6);
-  b.setAttribute('aria-disabled',dis);b.setAttribute('href','tel:'+FLOW.numero.replace(/\s/g,''));}
-function startCall(ev){
-  if(!FLOW.cliente||FLOW.numero.length<6){if(ev)ev.preventDefault();alert('Selecciona cliente e ingresa un número válido.');return;}
-  FLOW.startTs=Date.now();FLOW.horaInicio=clockNow();FLOW.step=2;
-  setTimeout(function(){renderFlow();TIMER=setInterval(tickTimer,250);tickTimer();},30);
+function step1Crear(){
+  return '<div class="step">Nuevo cliente</div><h3>Crear cliente</h3>'+
+    '<label class="fl">Nombre del cliente</label><input class="fld" id="ncNombre" style="text-transform:uppercase" value="'+(FLOW.newName||'')+'">'+
+    '<label class="fl">Nombre de la cadena</label><input class="fld" id="ncCadena" style="text-transform:uppercase" placeholder="Cadena / mini cadena">'+
+    '<label class="fl">Número de teléfono</label><input class="fld num" id="ncNumero" type="tel" inputmode="tel" placeholder="Número">'+
+    '<div class="row-actions"><button class="btn-ghost" onclick="cliCancel()">Cancelar</button><button class="btn-go" style="margin-top:0" onclick="cliGuardar()">Guardar cliente</button></div>';
 }
+function cliFilter(q){var box=document.getElementById('cliResults');if(!box)return;var qu=(q||'').toUpperCase().trim();var res=findClients(qu);var out='';
+  for(var i=0;i<res.length&&i<8;i++){var c=res[i];out+='<div class="skures" onclick="cliPick(\''+c.id+'\')"><b>'+c.nombre+'</b><span>'+(c.cadena||'')+(c.numero?' · '+telFmt(c.numero):'')+'</span></div>';}
+  if(qu)out+='<div class="skures crear" onclick="cliNuevo()">&#43; Crear cliente "'+qu+'"</div>';
+  box.innerHTML=out;}
+function cliPick(id){var c=null;for(var i=0;i<CLIENTS_DB.length;i++)if(CLIENTS_DB[i].id===id)c=CLIENTS_DB[i];if(!c)return;
+  FLOW.cliente=c.nombre;FLOW.cadena=c.cadena;FLOW.numero=c.numero;renderFlow();}
+function cliNuevo(){var q=document.getElementById('cliBuscar');FLOW.newName=q?(''+q.value).toUpperCase().trim():'';FLOW.creating=true;renderFlow();}
+function cliCancel(){FLOW.creating=false;renderFlow();}
+function cliGuardar(){var nombre=valU('ncNombre'),cadena=valU('ncCadena'),numero=valU('ncNumero');
+  if(!nombre){alert('Ingresa el nombre del cliente.');return;}
+  var c=addClient(nombre,cadena,numero);FLOW.creating=false;FLOW.cliente=c.nombre;FLOW.cadena=c.cadena;FLOW.numero=c.numero;renderFlow();}
+function cliClear(){FLOW.cliente='';FLOW.cadena='';FLOW.numero='';renderFlow();}
+function valU(id){var e=document.getElementById(id);return e?(''+e.value).toUpperCase().trim():'';}
+function startCall(ev){if(ev)ev.preventDefault();
+  var t=document.getElementById('telInput');var num=t?(''+t.value).replace(/[^\d+]/g,''):'';
+  if(!FLOW.cliente){alert('Selecciona o crea un cliente.');return;}
+  if(num.length<6){alert('Ingresa un número válido.');return;}
+  FLOW.numero=num;FLOW.startTs=Date.now();FLOW.horaInicio=clockNow();FLOW.step=2;
+  try{window.location.href='tel:'+num;}catch(e){}
+  setTimeout(function(){renderFlow();TIMER=setInterval(tickTimer,250);tickTimer();},30);}
 function step2(){var R=92,C=2*Math.PI*R;
   return '<div class="step">Paso 2 · Llamada en curso</div><h3>'+FLOW.cliente+'</h3>'+
     '<div style="text-align:center;color:var(--mut);font-size:13px">'+telFmt(FLOW.numero)+'</div>'+
@@ -521,49 +739,129 @@ function step2(){var R=92,C=2*Math.PI*R;
       '<circle id="prog" cx="100" cy="100" r="'+R+'" fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/>'+
       '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>'+
       '</svg><div class="center"><div class="time num" id="clock">00:00</div><div class="cli">inicio '+FLOW.horaInicio+'</div></div></div></div>'+
-    '<button class="btn-stop" onclick="stopCall()">■ Finalizar llamada</button>';
+    '<button class="btn-stop" onclick="stopCall()">&#9632; Finalizar llamada</button>';
 }
 function tickTimer(){var el=(Date.now()-FLOW.startTs)/1000;var c=document.getElementById('clock');if(c)c.textContent=secToShort(Math.floor(el));
   var p=document.getElementById('prog');if(p){var R=92,C=2*Math.PI*R;var frac=Math.min(el/(10*60),1);p.setAttribute('stroke-dashoffset',C*(1-frac));}}
 function stopCall(){if(TIMER){clearInterval(TIMER);TIMER=null;}
   FLOW.durSec=Math.max(1,Math.round((Date.now()-FLOW.startTs)/1000));FLOW.horaFin=clockNow();FLOW.step=3;renderFlow();}
 function step3(){
-  var pedHtml='';
+  var ped='';
   if(FLOW.venta===true){
-    var skuOpts='<option value="">Agregar producto vendido…</option>';
-    for(var i=0;i<SKUS.length;i++)skuOpts+='<option value="'+i+'">'+SKUS[i].nm+' — '+fmtS(SKUS[i].precio)+'</option>';
-    var lines='',tot=0;
+    var tot=0;var lines='';
     for(var j=0;j<FLOW.lineas.length;j++){var L=FLOW.lineas[j];tot+=L.subtotal;
-      lines+='<div class="line"><div class="nm"><b>'+L.nm+'</b><span>'+fmtS(L.precio)+' c/u</span></div>'+
-        '<div class="qty"><button onclick="qstep('+j+',-1)">−</button><input class="num" value="'+L.cantidad+'" readonly><button onclick="qstep('+j+',1)">+</button></div>'+
-        '<div class="lt num">'+fmtS(L.subtotal)+'</div></div>';}
-    pedHtml='<label class="fl">¿Qué vendió?</label><div class="addsku"><select class="fld" id="addSku">'+skuOpts+'</select><button onclick="addSku()">+</button></div>'+
-      lines+'<div class="totbar"><span class="t">Total vendido</span><span class="v num">'+fmtS(tot)+'</span></div>'+
+      lines+='<div class="skuline"><div class="top"><div class="nm"><b>'+L.nm+'</b><span>'+(L.marca||'')+(L.ean?' · '+L.ean:'')+'</span></div>'+
+        '<button class="rm" onclick="removeLine('+j+')">&#10005;</button></div>'+
+        '<div class="ins"><div class="grp"><label>Unidades</label><input type="number" inputmode="numeric" min="0" value="'+L.cantidad+'" oninput="lineEdit('+j+',\'cantidad\',this.value)"></div>'+
+        '<div class="grp"><label>Costo unit. (S/)</label><input type="number" inputmode="decimal" min="0" step="0.01" value="'+(L.precio||'')+'" oninput="lineEdit('+j+',\'precio\',this.value)"></div>'+
+        '<div class="lt" id="lt_'+j+'">'+fmtS(L.subtotal)+'</div></div></div>';}
+    ped='<div class="sec-title" style="margin:18px 4px 6px"><h2>Productos del pedido</h2><span class="badge"><span id="ordN">'+FLOW.lineas.length+'</span>/20 · S/ <span id="ordTot">'+tot.toFixed(2)+'</span></span></div>'+
+      '<input class="fld" id="skuSearch" autocomplete="off" placeholder="Busca SKU por nombre, marca o EAN" oninput="skuFilter(this.value)">'+
+      '<div id="skuResults" class="reslist"></div>'+
+      lines+
       '<button class="btn-go" '+(FLOW.lineas.length?'':'disabled')+' onclick="saveCall()">Guardar llamada ✓</button>';
   }else if(FLOW.venta===false){
     var co='<option value="">Selecciona el motivo…</option>';
     for(var k=0;k<CAUSALES.length;k++)co+='<option'+(FLOW.causal===CAUSALES[k]?' selected':'')+'>'+CAUSALES[k]+'</option>';
-    pedHtml='<label class="fl">¿Por qué no se concretó la venta?</label><select class="fld" id="selCausal" onchange="FLOW.causal=this.value">'+co+'</select>'+
+    ped='<label class="fl">¿Por qué no se concretó la venta?</label><select class="fld" id="selCausal" onchange="FLOW.causal=this.value">'+co+'</select>'+
       '<button class="btn-go" style="background:linear-gradient(135deg,var(--amber),#d97706)" onclick="saveCall()">Guardar llamada ✓</button>';
   }
   return '<div class="step">Paso 3 · Resultado</div><h3>'+FLOW.cliente+'</h3>'+
     '<div class="meta-line" style="border-top:none;margin-top:6px;padding-top:0"><span>'+telFmt(FLOW.numero)+'</span><span>'+FLOW.horaInicio+' → '+FLOW.horaFin+' · '+secToShort(FLOW.durSec)+'</span></div>'+
-    '<label class="fl">¿Con quién habló? (encargado de la cadena)</label>'+
-    '<input class="fld" id="contacto" placeholder="Nombre del responsable" value="'+(FLOW.contacto||'')+'" oninput="FLOW.contacto=this.value"/>'+
+    '<label class="fl">¿Con quién habló? (encargado)</label>'+
+    '<input class="fld" id="contacto" placeholder="Nombre del responsable" style="text-transform:uppercase" value="'+(FLOW.contacto||'')+'" oninput="FLOW.contacto=this.value">'+
     '<label class="fl" style="margin-top:14px">Resultado</label>'+
-    '<div class="seg"><button class="'+(FLOW.venta===true?'on':'')+'" onclick="setVenta(true)"><span class="em">🛒</span>Logró venta</button>'+
-      '<button class="'+(FLOW.venta===false?'on':'')+'" onclick="setVenta(false)"><span class="em">✕</span>Sin venta</button></div>'+pedHtml;
+    '<div class="seg"><button class="'+(FLOW.venta===true?'on':'')+'" onclick="setVenta(true)"><span class="em">&#128722;</span>Logró venta</button>'+
+      '<button class="'+(FLOW.venta===false?'on':'')+'" onclick="setVenta(false)"><span class="em">&#10005;</span>Sin venta</button></div>'+ped;
 }
-function setVenta(v){FLOW.venta=v;if(v)FLOW.causal='';else FLOW.lineas=[];renderFlow();var c=document.getElementById('contacto');if(c)c.value=FLOW.contacto||'';}
-function addSku(){var sel=document.getElementById('addSku');var idx=sel.value;if(idx==='')return;var sk=SKUS[+idx];
-  FLOW.lineas.push({nm:sk.nm,precio:sk.precio,cantidad:1,subtotal:sk.precio});renderFlow();}
-function qstep(j,d){var L=FLOW.lineas[j];L.cantidad=Math.max(1,L.cantidad+d);L.subtotal=+(L.precio*L.cantidad).toFixed(2);renderFlow();}
+function setVenta(v){var c=document.getElementById('contacto');if(c)FLOW.contacto=c.value;
+  FLOW.venta=v;if(v)FLOW.causal='';else FLOW.lineas=[];renderFlow();}
+function skuFilter(q){var box=document.getElementById('skuResults');if(!box)return;var qu=(q||'').toUpperCase().trim();
+  if(!qu){box.innerHTML='';return;}var out='',cnt=0;
+  for(var i=0;i<SKUS.length&&cnt<30;i++){var s=SKUS[i];
+    if(s.nm.toUpperCase().indexOf(qu)>=0||s.ean.indexOf(qu)>=0||s.marca.toUpperCase().indexOf(qu)>=0){
+      out+='<div class="skures" onclick="addSkuToOrder('+i+')"><b>'+s.nm+'</b><span>'+s.marca+' · '+s.ean+'</span></div>';cnt++;}}
+  box.innerHTML=out||'<div class="skures muted">Sin resultados</div>';}
+function addSkuToOrder(i){var c=document.getElementById('contacto');if(c)FLOW.contacto=c.value;
+  if(FLOW.lineas.length>=20){alert('Máximo 20 SKUs por pedido.');return;}
+  var s=SKUS[i];for(var k=0;k<FLOW.lineas.length;k++)if(FLOW.lineas[k].ean===s.ean)return;
+  FLOW.lineas.push({ean:s.ean,nm:s.nm,marca:s.marca,cat:s.cat,sub:s.sub,cantidad:1,precio:0,subtotal:0});renderFlow();}
+function removeLine(j){var c=document.getElementById('contacto');if(c)FLOW.contacto=c.value;FLOW.lineas.splice(j,1);renderFlow();}
+function lineEdit(j,field,val){var L=FLOW.lineas[j];var n=parseFloat(val);if(isNaN(n)||n<0)n=0;
+  if(field==='cantidad')L.cantidad=Math.floor(n);else L.precio=n;
+  L.subtotal=+(L.cantidad*L.precio).toFixed(2);
+  var lt=document.getElementById('lt_'+j);if(lt)lt.textContent=fmtS(L.subtotal);
+  var t=0;for(var i=0;i<FLOW.lineas.length;i++)t+=FLOW.lineas[i].subtotal;
+  var ot=document.getElementById('ordTot');if(ot)ot.textContent=t.toFixed(2);
+  var on=document.getElementById('ordN');if(on)on.textContent=FLOW.lineas.length;}
+
+/* ===== MI GESTIÓN (historial / acumulado entre fechas) ===== */
+var MG={desde:'',hasta:''};
+function renderMiGestion(){
+  if(!MG.desde){MG.desde=diasAtras(7);MG.hasta=todayStr();}
+  var recs=myRange(MG.desde,MG.hasta);
+  var seg=0,ventas=0,ven=0;for(var i=0;i<recs.length;i++){seg+=recs[i].durSec;if(recs[i].venta){ven++;ventas+=recs[i].total;}}
+  var conv=recs.length?Math.round(ven/recs.length*100):0;
+  var html='<div class="wrap">'+
+    '<div class="greet" style="display:flex;align-items:center;gap:10px"><button class="logout" onclick="renderApp()">‹ Volver</button><h1 style="font-size:18px;margin:0">Mi gestión</h1></div>'+
+    '<div class="daterow"><div class="grp"><label class="fl">Desde</label><input class="fld" type="date" value="'+MG.desde+'" onchange="MG.desde=this.value;renderMiGestion()"></div>'+
+      '<div class="grp"><label class="fl">Hasta</label><input class="fld" type="date" value="'+MG.hasta+'" onchange="MG.hasta=this.value;renderMiGestion()"></div></div>'+
+    '<div class="kpis" style="margin-top:12px">'+
+      '<div class="kpi accent"><div class="lab">Tiempo</div><div class="val num">'+secToFull(seg)+'</div></div>'+
+      '<div class="kpi"><div class="lab">Llamadas</div><div class="val num">'+recs.length+'</div></div>'+
+      '<div class="kpi"><div class="lab">Conversión</div><div class="val num">'+conv+'<small> %</small></div></div>'+
+      '<div class="kpi green"><div class="lab">Soles</div><div class="val num">'+ventas.toFixed(0)+'<small> S/</small></div></div>'+
+    '</div>'+
+    '<div class="sec-title"><h2>Detalle</h2><span class="badge">'+recs.length+'</span></div>'+
+    (recs.length?recs.map(callCardFull).join(''):'<div class="empty">Sin llamadas en el rango seleccionado.</div>')+
+  '</div>';
+  document.getElementById('view').innerHTML=html;
+}
+function myRange(desde,hasta){var o=[];for(var i=0;i<RECORDS.length;i++){var r=RECORDS[i];if(r.trans!==SESSION.id)continue;
+  if(desde&&r.fecha<desde)continue;if(hasta&&r.fecha>hasta)continue;o.push(r);}
+  o.sort(function(a,b){return (a.fecha+a.horaInicio)<(b.fecha+b.horaInicio)?1:-1;});return o;}
+function callCardFull(r){var tag=r.venta?'<span class="tag sale">'+fmtS(r.total)+'</span>':'<span class="tag nosale">'+r.causal+'</span>';
+  return '<div class="call"><div class="ic">&#9742;</div><div class="who"><b>'+r.cliente+'</b><span>'+r.fecha+' · '+telFmt(r.numero)+'</span>'+
+    '<div class="meta">'+r.horaInicio+' → '+r.horaFin+'</div>'+tag+'</div><div class="rt"><div class="dur num">'+secToShort(r.durSec)+'</div></div></div>';}
+
+/* ===== COMPARTIR CIERRE DEL DÍA ===== */
+var CIERRE_TXT='';
+function renderCierre(){
+  var recs=myToday();var seg=0,ventas=0,ven=0,nov=0;var agg={};
+  for(var i=0;i<recs.length;i++){var r=recs[i];seg+=r.durSec;
+    if(r.venta){ven++;ventas+=r.total;for(var l=0;l<r.lineas.length;l++){var L=r.lineas[l];var k=L.ean||L.nm;
+      if(!agg[k])agg[k]={nm:L.nm,und:0,soles:0};agg[k].und+=Number(L.cantidad||0);agg[k].soles+=Number(L.subtotal||0);}}else nov++;}
+  var mins=Math.round(seg/60);var efe=recs.length?Math.round(ven/recs.length*100):0;
+  var fecha=new Date().toLocaleDateString('es-PE');
+  var txt='CIERRE DEL DÍA — '+fecha+'\n';
+  txt+='USUARIO: '+SESSION.name+'\n';
+  txt+='Total llamadas: '+recs.length+'\n';
+  txt+='Total minutos: '+mins+'\n';
+  txt+='Con venta: '+ven+'\n';
+  txt+='Sin venta: '+nov+'\n';
+  txt+='Efectividad: '+efe+'%\n';
+  txt+='Total S/: '+ventas.toFixed(2)+'\n';
+  var lista='';for(var kk in agg){lista+='• '+agg[kk].nm+' ('+agg[kk].und+' UND) = '+fmtS(agg[kk].soles)+'\n';}
+  if(lista)txt+='\nSKUs vendidos:\n'+lista;
+  CIERRE_TXT=txt;
+  var s=document.getElementById('sheet');if(s)s.remove();
+  var div=document.createElement('div');div.className='sheet';div.id='sheet';
+  div.innerHTML='<div class="sheet-inner"><div class="step">Cierre del día</div><h3>Compartir cierre</h3>'+
+    '<div class="report">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</div>'+
+    '<div class="row-actions"><button class="btn-ghost" onclick="closeSheet()">Cerrar</button><button class="btn-go" style="margin-top:0" onclick="compartirCierre()">Compartir</button></div>'+
+    '<button class="testlink" onclick="copiarCierre()" style="margin-top:14px">Copiar texto</button></div>';
+  document.body.appendChild(div);
+}
+function closeSheet(){var s=document.getElementById('sheet');if(s)s.remove();}
+function compartirCierre(){if(navigator.share){navigator.share({title:'Cierre del día',text:CIERRE_TXT}).catch(function(){});}else{copiarCierre();}}
+function copiarCierre(){try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(CIERRE_TXT).then(function(){alert('Cierre copiado. Pégalo en WhatsApp.');},function(){alert(CIERRE_TXT);});}else{alert(CIERRE_TXT);}}catch(e){alert(CIERRE_TXT);}}
+
 function saveCall(){
   if(!FLOW.contacto||!FLOW.contacto.trim()){alert('Indica con quién habló.');return;}
   if(FLOW.venta===null){alert('Marca si hubo venta o no.');return;}
   if(FLOW.venta===false&&!FLOW.causal){alert('Selecciona el motivo de no venta.');return;}
   var total=0;for(var i=0;i<FLOW.lineas.length;i++)total+=FLOW.lineas[i].subtotal;
-  var rec={id:Date.now()+'-'+SESSION.id,fecha:todayStr(),trans:SESSION.id,cliente:FLOW.cliente,numero:FLOW.numero,
+  var rec={id:Date.now()+'-'+SESSION.id,fecha:todayStr(),trans:SESSION.id,cliente:FLOW.cliente+(FLOW.cadena?' · '+FLOW.cadena:''),numero:FLOW.numero,
     horaInicio:FLOW.horaInicio,horaFin:FLOW.horaFin,durSec:FLOW.durSec,venta:!!FLOW.venta,contacto:FLOW.contacto.trim(),
     lineas:FLOW.lineas.slice(),total:+total.toFixed(2),causal:FLOW.venta?'':FLOW.causal};
   if(ONLINE){
@@ -589,7 +887,7 @@ function renderDash(){
   for(var i=0;i<recs.length;i++){seg+=recs[i].durSec;if(recs[i].venta){ven++;ventas+=recs[i].total;}}
   var nC=recs.length;var prom=nC?Math.round(seg/nC):0;var conv=nC?(ven/nC*100):0;
   var transOpts='<option value="ALL">Todos los transferencistas</option>';
-  for(var u=1;u<=7;u++){var id='TRANS'+u;transOpts+='<option value="'+id+'"'+(DASH.trans===id?' selected':'')+'>'+uname(id)+'</option>';}
+  for(var ui=0;ui<USERS.length;ui++){if(USERS[ui].role!=='trans')continue;var id=USERS[ui].id;transOpts+='<option value="'+id+'"'+(DASH.trans===id?' selected':'')+'>'+uname(id)+'</option>';}
   var html='<div class="wrap dash-wrap">'+
     '<div class="greet" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'+
       '<div><h1>Panel ejecutivo</h1><p>Tiempo de llamadas, resultados y control de integridad · tiempo real</p></div>'+
@@ -610,7 +908,7 @@ function renderDash(){
       '<div class="panel"><h3>Tiempo en llamadas por transferencista</h3><div class="ph">Minutos al teléfono en el periodo</div>'+barsTime(recs)+'</div>'+
       '<div class="panel"><h3>Resultado de llamadas</h3><div class="ph">Venta vs. sin venta</div>'+donutRes(recs)+'</div></div>'+
     '<div class="panels" style="margin-top:13px">'+
-      '<div class="panel"><h3>Llamadas por cadena</h3><div class="ph">Dónde se concentra la gestión</div>'+barsClient(recs)+'</div>'+
+      '<div class="panel"><h3>Llamadas por cliente</h3><div class="ph">Dónde se concentra la gestión</div>'+barsClient(recs)+'</div>'+
       '<div class="panel"><h3>Ventas por transferencista</h3><div class="ph">Soles generados</div>'+barsSales(recs)+'</div></div>'+
     '<div class="panel full" style="margin-top:13px"><h3>Distribución horaria</h3><div class="ph">Llamadas por hora del día</div>'+hoursChart(recs)+'</div>'+
     '<div class="panel full" style="margin-top:13px"><h3>Productividad del equipo</h3><div class="ph">Ordenado por tiempo en llamadas</div>'+rankTable(recs)+'</div>'+
@@ -686,10 +984,10 @@ function startLive(){stopLive();
 }
 function stopLive(){if(DASH.int){clearInterval(DASH.int);DASH.int=null;}if(DASH.clock){clearInterval(DASH.clock);DASH.clock=null;}}
 function injectLive(){
-  var u=ri(1,7);var dur=ri(40,520);var conecto=rnd()<0.85;var venta=conecto&&rnd()<0.5;var lineas=[],tot=0;
-  if(venta){var ns=ri(1,3);for(var s=0;s<ns;s++){var sk=pick(SKUS);var q=ri(1,10);var sub=+(sk.precio*q).toFixed(2);tot+=sub;lineas.push({nm:sk.nm,precio:sk.precio,cantidad:q,subtotal:sub});}}
+  var tids=transIds();var tid=tids[ri(0,tids.length-1)];var dur=ri(40,520);var conecto=rnd()<0.85;var venta=conecto&&rnd()<0.5;var lineas=[],tot=0;
+  if(venta){var ns=ri(1,3);for(var s=0;s<ns;s++){var sk=pick(SKUS);var q=ri(1,10);var pr=ri(2,25);var sub=+(pr*q).toFixed(2);tot+=sub;lineas.push({ean:sk.ean,nm:sk.nm,marca:sk.marca,precio:pr,cantidad:q,subtotal:sub});}}
   if(!conecto)dur=ri(8,28);var hi=clockNow();
-  RECORDS.push({id:Date.now()+'-live'+ri(1,9999),fecha:todayStr(),trans:'TRANS'+u,cliente:pick(CLIENTS),numero:genMobile(),
+  RECORDS.push({id:Date.now()+'-live'+ri(1,9999),fecha:todayStr(),trans:tid,cliente:pick(DEMO_CLIENTS),numero:genMobile(),
     horaInicio:hi,horaFin:addSecToTime(hi,dur),durSec:dur,venta:venta,contacto:conecto?pick(CONTACTOS):'—',
     lineas:lineas,total:+tot.toFixed(2),causal:venta?'':(conecto?pick(['Sin presupuesto','Ya cuenta con stock','Precio elevado','Pedir cita / reagendar']):pick(['No contesta','Buzón de voz']))});
   /* de tanto en tanto, simula un evento de integridad para mostrar la notificación al admin */
@@ -699,8 +997,8 @@ function injectLive(){
       {t:'Ubicación simulada (GPS falso)',d:'El equipo reporta una ubicación generada por una app de GPS falso.',s:'high'},
       {t:'Hora automática desactivada',d:'La opción "Fecha y hora automática" del sistema está apagada.',s:'high'}
     ]);
-    var tid='TRANS'+ri(1,7);var d=new Date();
-    ALERTS.unshift({id:Date.now()+'-sim'+ri(1,9999),transId:tid,transName:uname(tid),tipo:ev.t,detalle:ev.d,sev:ev.s,origin:'simulacion',
+    var t2=tids[ri(0,tids.length-1)];var d=new Date();
+    ALERTS.unshift({id:Date.now()+'-sim'+ri(1,9999),transId:t2,transName:uname(t2),tipo:ev.t,detalle:ev.d,sev:ev.s,origin:'simulacion',
       fecha:ymd(d),hora:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()),read:false});
     notifySystem(ALERTS[0]);
   }

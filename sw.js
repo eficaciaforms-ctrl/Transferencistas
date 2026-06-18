@@ -1,5 +1,5 @@
 /* TRANSFER · Kenvue — service worker */
-var CACHE = 'transfer-kenvue-v2';
+var CACHE = 'transfer-kenvue-v3';
 var ASSETS = [
   './',
   './index.html',

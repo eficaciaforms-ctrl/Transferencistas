@@ -205,6 +205,12 @@
   .appbtn .em{font-size:21px}.appbtn:active{background:#16223c}
   .daterow{display:flex;gap:8px}.daterow .grp{flex:1;min-width:0}
   .report{background:#0c1626;border:1px solid var(--line);border-radius:14px;padding:16px;white-space:pre-wrap;font-size:12.8px;line-height:1.65;font-variant-numeric:tabular-nums;margin-top:6px;max-height:50vh;overflow:auto}
+  .syncbtn{width:100%;margin-top:12px;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:14px;color:#fff;background:#1b2740;font-family:inherit;letter-spacing:.2px}
+  .syncbtn.on{background:linear-gradient(135deg,var(--blue),var(--cyan));box-shadow:0 8px 22px rgba(37,99,235,.35)}
+  .syncbtn.busy{background:#1b2740;color:var(--mut)}
+  .syncbtn[disabled]{opacity:.65}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#0b1424;border:1px solid var(--line);color:var(--txt);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.25s;z-index:9999;max-width:88vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -236,7 +242,7 @@
 <script>
 /* ===== DATOS ===== */
 var USERS=[
-  {id:'ADMIN',name:'Milagros Chavez',role:'admin',pass:'ADMIN123$'},
+  {id:'ADMIN',name:'Sebastián Pereyra',role:'admin',pass:'ADMIN123$'},
   {id:'TRANSFERSUR2',name:'TRANSFERSUR2',role:'trans',pass:'TRANSFERSUR2'},
   {id:'TRANSFERNORTE',name:'TRANSFERNORTE',role:'trans',pass:'TRANSFERNORTE'},
   {id:'TRANSFERSENIOR1',name:'TRANSFERSENIOR1',role:'trans',pass:'TRANSFERSENIOR1'},
@@ -426,7 +432,7 @@ var CAUSALES=['No contesta','Buzón de voz','Sin presupuesto','Ya cuenta con sto
 var CONTACTOS=['Sr. Quispe','Sra. Torres','Sr. Ramos','Sra. Díaz','Sr. Mendoza','Sra. Flores','Sr. Chávez','Sra. León','Sr. Rojas','Sra. Paredes'];
 
 /* ===== ESTADO ===== */
-var SESSION=null,RECORDS=[],ALERTS=[],FLOW=null,TIMER=null;
+var SESSION=null,RECORDS=[],ALERTS=[],FLOW=null,TIMER=null,PENDING=[],SYNCING=false;
 var DASH={days:0,trans:'ALL',live:true,int:null,clock:null,view:'panel'};
 var MON={lastW:0,lastP:0,running:false,int:null,cooldownUntil:0};
 var deferredPrompt=null;
@@ -459,6 +465,15 @@ function mapAlerta(r){
     fecha:String(r.Fecha||''),hora:String(r.Hora||''),read:String(r.Leida)==='SI'};
 }
 function diasAtras(n){var d=new Date();d.setDate(d.getDate()-n);return ymd(d);}
+
+/* ===== PERSISTENCIA LOCAL (la sesión y los relevos NO se pierden al cerrar la app) ===== */
+function saveSession(){try{if(SESSION)localStorage.setItem('transfer_session',SESSION.id);else localStorage.removeItem('transfer_session');}catch(e){}}
+function pendKey(){return 'transfer_pend_'+(SESSION?SESSION.id:'anon');}
+function loadPending(){PENDING=[];try{var r=localStorage.getItem(pendKey());if(r)PENDING=JSON.parse(r)||[];}catch(e){PENDING=[];}}
+function savePending(){try{localStorage.setItem(pendKey(),JSON.stringify(PENDING));}catch(e){}}
+function toast(msg){var t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}
+  t.textContent=msg;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('show');},3200);}
+
 /* Carga llamadas (ultimos 30 dias) + alertas desde el GAS */
 function cargarDesdeGAS(cb){
   LOADING=true;var pend=2,errAny=null;
@@ -532,7 +547,10 @@ function doLogin(){
   var err=document.getElementById('loginErr');
   if(!us){err.textContent='Usuario no reconocido.';return;}
   if(us.pass!==pw){err.textContent='Contraseña incorrecta.';return;}
-  err.textContent='';SESSION=us;
+  err.textContent='';SESSION=us;saveSession();enterApp();
+}
+function enterApp(){
+  var us=SESSION;
   document.getElementById('login').classList.add('hide');
   document.getElementById('app').classList.remove('hide');
   document.getElementById('uname').textContent=us.name;
@@ -546,14 +564,25 @@ function doLogin(){
       cargarDesdeGAS(function(err){renderDash();startLive();updateBell();adminEntryNotify();});
     }else{renderDash();startLive();updateBell();adminEntryNotify();}
   }else{
-    bell.classList.add('hide');monStart();
+    bell.classList.add('hide');loadPending();monStart();
     if(ONLINE){
       document.getElementById('view').innerHTML='<div class="wrap"><div class="empty">Cargando…</div></div>';
       cargarDesdeGAS(function(err){renderApp();});
     }else{renderApp();}
   }
 }
-function logout(){stopLive();monStop();SESSION=null;FLOW=null;if(TIMER){clearInterval(TIMER);TIMER=null;}
+function bootSession(){
+  var sid='';try{sid=localStorage.getItem('transfer_session')||'';}catch(e){}
+  if(!sid)return;
+  var us=null;for(var i=0;i<USERS.length;i++)if(USERS[i].id===sid)us=USERS[i];
+  if(us){SESSION=us;enterApp();}
+}
+function logout(){
+  if(SESSION&&SESSION.role==='trans'&&PENDING.length){
+    alert('Tienes '+PENDING.length+' relevo(s) sin sincronizar.\nSincroniza los relevos antes de cerrar sesión para no perder información.');
+    return;
+  }
+  stopLive();monStop();SESSION=null;FLOW=null;if(TIMER){clearInterval(TIMER);TIMER=null;}saveSession();
   document.getElementById('app').classList.add('hide');document.getElementById('login').classList.remove('hide');document.getElementById('p').value='';}
 
 /* ===== CONTROL DE INTEGRIDAD (real, lado app) ===== */
@@ -639,27 +668,38 @@ function markAll(){
 
 /* ===== APP TRANSFERENCISTA ===== */
 function myToday(){var t=todayStr(),r=[];for(var i=0;i<RECORDS.length;i++)if(RECORDS[i].trans===SESSION.id&&RECORDS[i].fecha===t)r.push(RECORDS[i]);
+  for(var p=0;p<PENDING.length;p++)if(PENDING[p].trans===SESSION.id&&PENDING[p].fecha===t)r.push(PENDING[p]);
   r.sort(function(a,b){return a.horaInicio<b.horaInicio?1:-1;});return r;}
+function syncedToday(){var t=todayStr(),r=[];for(var i=0;i<RECORDS.length;i++)if(RECORDS[i].trans===SESSION.id&&RECORDS[i].fecha===t)r.push(RECORDS[i]);return r;}
 function renderApp(){
-  var recs=myToday();var seg=0,ventas=0,ven=0;
-  for(var i=0;i<recs.length;i++){seg+=recs[i].durSec;if(recs[i].venta){ven++;ventas+=recs[i].total;}}
+  var syn=syncedToday();var pend=PENDING.slice();
+  pend.sort(function(a,b){return a.horaInicio<b.horaInicio?1:-1;});
+  var all=syn.concat(pend);
+  var seg=0,ventas=0,ven=0;
+  for(var i=0;i<all.length;i++){seg+=all[i].durSec;if(all[i].venta){ven++;ventas+=all[i].total;}}
+  var np=pend.length;
+  var syncBtn;
+  if(SYNCING){syncBtn='<button class="syncbtn busy" disabled>Sincronizando relevos…</button>';}
+  else if(np){syncBtn='<button class="syncbtn on" onclick="syncRelevos()">&#8635; Sincronizar relevos ('+np+')</button>';}
+  else{syncBtn='<button class="syncbtn" disabled>&#10003; Todo sincronizado</button>';}
   var html='<div class="wrap">'+
     '<div class="greet"><h1>Hola, '+SESSION.name+'</h1><p>'+new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})+'</p>'+
       '<span class="chip-ok"><span class="pulse"></span>Control de integridad activo</span></div>'+
     '<div class="kpis">'+
       '<div class="kpi accent"><div class="lab">Tiempo en llamadas</div><div class="val num">'+secToFull(seg)+'</div></div>'+
-      '<div class="kpi"><div class="lab">Llamadas</div><div class="val num">'+recs.length+'</div></div>'+
+      '<div class="kpi"><div class="lab">Llamadas hoy</div><div class="val num">'+all.length+'</div></div>'+
       '<div class="kpi"><div class="lab">Ventas</div><div class="val num">'+ven+'</div></div>'+
       '<div class="kpi green"><div class="lab">Soles</div><div class="val num">'+ventas.toFixed(0)+'<small> S/</small></div></div>'+
     '</div>'+
+    syncBtn+
     '<div class="hero"><div class="hh">Inicia la llamada aquí. El número, la hora y la duración se registran automáticamente.</div>'+
       '<button class="start-btn" onclick="openFlow()">&#9742; Iniciar llamada</button></div>'+
     '<div class="appbtns">'+
       '<button class="appbtn" onclick="renderMiGestion()"><span class="em">&#128197;</span>Mi gestión</button>'+
       '<button class="appbtn" onclick="renderCierre()"><span class="em">&#128228;</span>Compartir cierre del día</button>'+
     '</div>'+
-    '<div class="sec-title"><h2>Llamadas de hoy</h2><span class="badge">'+recs.length+' registradas</span></div>'+
-    (recs.length?recs.map(callCard).join(''):'<div class="empty">Aún no registras llamadas hoy.<br>Pulsa <b>Iniciar llamada</b> para empezar.</div>')+
+    '<div class="sec-title"><h2>Relevos sin sincronizar</h2><span class="badge">'+np+' pendiente'+(np===1?'':'s')+'</span></div>'+
+    (np?pend.map(callCard).join(''):'<div class="empty">No tienes relevos pendientes.<br>Los relevos sincronizados los revisas en <b>Mi gestión</b>.</div>')+
     '<button class="testlink" onclick="testIntegrity()">Probar alerta de integridad (demo)</button>'+
   '</div>';
   document.getElementById('view').innerHTML=html;
@@ -817,8 +857,11 @@ function renderMiGestion(){
   '</div>';
   document.getElementById('view').innerHTML=html;
 }
-function myRange(desde,hasta){var o=[];for(var i=0;i<RECORDS.length;i++){var r=RECORDS[i];if(r.trans!==SESSION.id)continue;
-  if(desde&&r.fecha<desde)continue;if(hasta&&r.fecha>hasta)continue;o.push(r);}
+function myRange(desde,hasta){var o=[],seen={};
+  for(var i=0;i<RECORDS.length;i++){var r=RECORDS[i];if(r.trans!==SESSION.id)continue;
+    if(desde&&r.fecha<desde)continue;if(hasta&&r.fecha>hasta)continue;o.push(r);seen[r.id]=1;}
+  for(var p=0;p<PENDING.length;p++){var q=PENDING[p];if(q.trans!==SESSION.id||seen[q.id])continue;
+    if(desde&&q.fecha<desde)continue;if(hasta&&q.fecha>hasta)continue;o.push(q);}
   o.sort(function(a,b){return (a.fecha+a.horaInicio)<(b.fecha+b.horaInicio)?1:-1;});return o;}
 function callCardFull(r){var tag=r.venta?'<span class="tag sale">'+fmtS(r.total)+'</span>':'<span class="tag nosale">'+r.causal+'</span>';
   return '<div class="call"><div class="ic">&#9742;</div><div class="who"><b>'+r.cliente+'</b><span>'+r.fecha+' · '+telFmt(r.numero)+'</span>'+
@@ -864,14 +907,34 @@ function saveCall(){
   var rec={id:Date.now()+'-'+SESSION.id,fecha:todayStr(),trans:SESSION.id,cliente:FLOW.cliente+(FLOW.cadena?' · '+FLOW.cadena:''),numero:FLOW.numero,
     horaInicio:FLOW.horaInicio,horaFin:FLOW.horaFin,durSec:FLOW.durSec,venta:!!FLOW.venta,contacto:FLOW.contacto.trim(),
     lineas:FLOW.lineas.slice(),total:+total.toFixed(2),causal:FLOW.venta?'':FLOW.causal};
-  if(ONLINE){
+  PENDING.push(rec);savePending();
+  closeFlow();renderApp();
+  toast('Relevo guardado. Recuerda sincronizar para enviarlo a la base.');
+}
+/* ===== SINCRONIZAR RELEVOS ===== */
+function syncRelevos(){
+  if(SYNCING)return;
+  if(!PENDING.length){toast('No hay relevos pendientes por sincronizar.');return;}
+  if(!ONLINE){alert('La conexión a la base no está configurada (GAS_URL). No se puede sincronizar.');return;}
+  SYNCING=true;renderApp();
+  var queue=PENDING.slice();var i=0;var okIds=[];var failed=0;
+  function next(){
+    if(i>=queue.length){finishSync(okIds,failed);return;}
+    var rec=queue[i];
     gasPost({action:'guardar_llamada',id:rec.id,fecha:rec.fecha,horaInicio:rec.horaInicio,horaFin:rec.horaFin,
       duracionSeg:rec.durSec,transferencista:rec.trans,cliente:rec.cliente,numero:rec.numero,venta:rec.venta,
       contacto:rec.contacto,productos:rec.lineas,totalSoles:rec.total,causal:rec.causal,deviceTime:Date.now()},
-      function(err){if(err)alert('No se pudo guardar en el servidor. Revisa tu conexión.');});
+      function(err,j){if(!err&&j&&j.ok){okIds.push(rec.id);}else{failed++;}i++;next();});
   }
-  RECORDS.push(rec);
-  closeFlow();renderApp();
+  next();
+}
+function finishSync(okIds,failed){
+  var keep=[];for(var k=0;k<PENDING.length;k++){if(okIds.indexOf(PENDING[k].id)<0)keep.push(PENDING[k]);}
+  PENDING=keep;savePending();SYNCING=false;
+  cargarDesdeGAS(function(){renderApp();
+    if(failed===0)toast(okIds.length+' relevo(s) sincronizado(s) y verificado(s) en la base.');
+    else alert('Se enviaron '+okIds.length+' relevo(s). '+failed+' no llegaron y quedan guardados en el equipo para reintentar la sincronización.');
+  });
 }
 
 /* ===== DASHBOARD ===== */
@@ -1006,6 +1069,7 @@ function injectLive(){
 
 document.getElementById('p').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
 document.getElementById('u').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('p').focus();});
+bootSession();
 </script>
 </body>
 </html>

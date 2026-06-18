@@ -1,7 +1,7 @@
 {
-  "name": "TRANSFER · Kenvue",
-  "short_name": "TRANSFER",
-  "description": "Gestion de llamadas de transferencistas con control de integridad.",
+  "name": "Call Transfer",
+  "short_name": "Call Transfer",
+  "description": "App de llamadas de venta: registro de gestion, pedidos y control de integridad.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

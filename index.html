@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0B1220">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
-<title>TRANSFER · Kenvue</title>
+<title>Call Transfer</title>
 <style>
   :root{
     --ink:#0B1220;--surf:#131C2E;--surf2:#1B2740;--line:#27344E;
@@ -211,26 +211,29 @@
   .syncbtn[disabled]{opacity:.65}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#0b1424;border:1px solid var(--line);color:var(--txt);padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.25s;z-index:9999;max-width:88vw;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .durrow{display:flex;align-items:center;gap:8px;margin:2px 0 4px}
+  .durrow input{width:72px;background:#0a1320;border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:10px;font-size:18px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+  .durrow .dsep{color:var(--mut);font-size:12px}
+  .durrow .durtot{margin-left:auto;font-weight:800;color:var(--cyan);font-size:16px}
 </style>
 </head>
 <body>
 
 <div id="login">
   <div class="card-login">
-    <div class="brand"><div class="logo">T</div><div><b>TRANSFER</b><small>Kenvue · Llamadas</small></div></div>
+    <div class="brand"><div class="logo">&#9742;</div><div><b>Call Transfer</b><small>Llamadas de venta</small></div></div>
     <p class="login-sub">Las llamadas se inician desde la app. El tiempo se registra solo y el equipo queda bajo control de integridad.</p>
-    <label class="fl" for="u">Usuario</label><input id="u" class="fld" autocomplete="off" placeholder="TRANSFERSUR2 · ADMIN"/>
+    <label class="fl" for="u">Usuario</label><input id="u" class="fld" autocomplete="off" placeholder="Usuario"/>
     <label class="fl" for="p">Contraseña</label><input id="p" class="fld" type="password" placeholder="••••••"/>
     <div class="err" id="loginErr"></div>
     <button class="btn-primary" onclick="doLogin()">Entrar</button>
     <button class="install-btn hide" id="installBtn" onclick="doInstall()">⬇ Instalar app en este equipo</button>
-    <div class="hint"><b>Usuarios</b> · TRANSFERSUR2 · TRANSFERNORTE · TRANSFERSENIOR1 · TRANSFERSENIOR2 (clave = mismo usuario). Administrador <b>ADMIN</b> / <b>ADMIN123$</b>.</div>
   </div>
 </div>
 
 <div id="app" class="hide">
   <div class="topbar">
-    <div class="logo">T</div><div class="tt">TRANSFER<small id="tbsub">Kenvue</small></div>
+    <div class="logo">&#9742;</div><div class="tt">Call Transfer<small id="tbsub">Llamadas</small></div>
     <div class="spacer"></div>
     <button class="bell hide" id="bell" onclick="goAlerts()">🔔<span class="bdg hide" id="bellBdg">0</span></button>
     <div class="userchip"><span class="avatar" id="avatar">A</span><span id="uname">—</span></div>
@@ -454,7 +457,8 @@ function gasPost(payload,cb){
 }
 function mapLlamada(r){
   var lineas=[];try{lineas=JSON.parse(r.ProductosJSON||'[]');}catch(e){lineas=[];}
-  return {id:String(r.ID),fecha:String(r.Fecha),trans:String(r.Transferencista),cliente:String(r.Cliente||''),
+  var f=String(r.Fecha||'');if(f.indexOf('T')>0)f=f.slice(0,10);
+  return {id:String(r.ID),fecha:f,trans:String(r.Transferencista),cliente:String(r.Cliente||''),
     numero:String(r.Numero||''),horaInicio:String(r.HoraInicio||''),horaFin:String(r.HoraFin||''),
     durSec:Number(r.DuracionSeg||0),venta:String(r.Venta)==='SI',contacto:String(r.Contacto||''),
     lineas:lineas,total:Number(r.TotalSoles||0),causal:String(r.Causal||'')};
@@ -724,12 +728,13 @@ function addClient(nombre,cadena,numero){var c={id:'c'+Date.now(),nombre:(nombre
 function findClients(q){q=(q||'').toUpperCase().trim();var o=[];for(var i=0;i<CLIENTS_DB.length;i++){var c=CLIENTS_DB[i];if(!q||c.nombre.indexOf(q)>=0||(c.cadena&&c.cadena.indexOf(q)>=0))o.push(c);}return o;}
 
 /* ===== FLUJO LLAMADA ===== */
-function openFlow(){loadClients();FLOW={step:1,cliente:'',cadena:'',numero:'',creating:false,newName:'',startTs:0,horaInicio:'',horaFin:'',durSec:0,venta:null,contacto:'',lineas:[],causal:''};renderFlow();}
+function openFlow(){loadClients();FLOW={step:1,cliente:'',cadena:'',numero:'',creating:false,newName:'',startTs:0,horaInicio:'',horaFin:'',durSec:0,venta:null,contacto:'',lineas:[],causal:'',awaiting:false};renderFlow();}
 function closeFlow(){if(TIMER){clearInterval(TIMER);TIMER=null;}FLOW=null;var s=document.getElementById('sheet');if(s)s.remove();}
-function renderFlow(){var s=document.getElementById('sheet');if(s)s.remove();
-  var div=document.createElement('div');div.className='sheet';div.id='sheet';
-  div.innerHTML='<div class="sheet-inner">'+(FLOW.step===1?step1():FLOW.step===2?step2():step3())+'</div>';
-  document.body.appendChild(div);}
+function renderFlow(){
+  var s=document.getElementById('sheet');
+  if(!s){s=document.createElement('div');s.className='sheet';s.id='sheet';s.innerHTML='<div class="sheet-inner"></div>';document.body.appendChild(s);}
+  s.querySelector('.sheet-inner').innerHTML=(FLOW.step===1?step1():FLOW.step===2?step2():step3());
+}
 
 function step1(){
   if(FLOW.creating)return step1Crear();
@@ -767,9 +772,21 @@ function startCall(ev){if(ev)ev.preventDefault();
   var t=document.getElementById('telInput');var num=t?(''+t.value).replace(/[^\d+]/g,''):'';
   if(!FLOW.cliente){alert('Selecciona o crea un cliente.');return;}
   if(num.length<6){alert('Ingresa un número válido.');return;}
-  FLOW.numero=num;FLOW.startTs=Date.now();FLOW.horaInicio=clockNow();FLOW.step=2;
+  FLOW.numero=num;FLOW.startTs=Date.now();FLOW.horaInicio=clockNow();FLOW.step=2;FLOW.awaiting=true;
   try{window.location.href='tel:'+num;}catch(e){}
   setTimeout(function(){renderFlow();TIMER=setInterval(tickTimer,250);tickTimer();},30);}
+/* Cuando el agente vuelve a la app después de la llamada, el tiempo se detiene solo */
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState!=='visible')return;
+  if(FLOW&&FLOW.step===2&&FLOW.awaiting){finalizeCall();}
+});
+window.addEventListener('focus',function(){if(FLOW&&FLOW.step===2&&FLOW.awaiting){finalizeCall();}});
+function finalizeCall(){
+  if(!FLOW||FLOW.step!==2)return;FLOW.awaiting=false;
+  if(TIMER){clearInterval(TIMER);TIMER=null;}
+  FLOW.durSec=Math.max(1,Math.round((Date.now()-FLOW.startTs)/1000));
+  FLOW.horaFin=addSecToTime(FLOW.horaInicio,FLOW.durSec);FLOW.step=3;renderFlow();
+}
 function step2(){var R=92,C=2*Math.PI*R;
   return '<div class="step">Paso 2 · Llamada en curso</div><h3>'+FLOW.cliente+'</h3>'+
     '<div style="text-align:center;color:var(--mut);font-size:13px">'+telFmt(FLOW.numero)+'</div>'+
@@ -779,12 +796,13 @@ function step2(){var R=92,C=2*Math.PI*R;
       '<circle id="prog" cx="100" cy="100" r="'+R+'" fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/>'+
       '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>'+
       '</svg><div class="center"><div class="time num" id="clock">00:00</div><div class="cli">inicio '+FLOW.horaInicio+'</div></div></div></div>'+
-    '<button class="btn-stop" onclick="stopCall()">&#9632; Finalizar llamada</button>';
+    '<button class="btn-stop" onclick="stopCall()">&#9632; Terminé la llamada</button>'+
+    '<div class="meta-line" style="border-top:none;justify-content:center;color:var(--mut2)"><span>El tiempo se detiene solo al volver de la llamada</span></div>';
 }
 function tickTimer(){var el=(Date.now()-FLOW.startTs)/1000;var c=document.getElementById('clock');if(c)c.textContent=secToShort(Math.floor(el));
   var p=document.getElementById('prog');if(p){var R=92,C=2*Math.PI*R;var frac=Math.min(el/(10*60),1);p.setAttribute('stroke-dashoffset',C*(1-frac));}}
-function stopCall(){if(TIMER){clearInterval(TIMER);TIMER=null;}
-  FLOW.durSec=Math.max(1,Math.round((Date.now()-FLOW.startTs)/1000));FLOW.horaFin=clockNow();FLOW.step=3;renderFlow();}
+function stopCall(){if(FLOW)FLOW.awaiting=false;if(TIMER){clearInterval(TIMER);TIMER=null;}
+  FLOW.durSec=Math.max(1,Math.round((Date.now()-FLOW.startTs)/1000));FLOW.horaFin=addSecToTime(FLOW.horaInicio,FLOW.durSec);FLOW.step=3;renderFlow();}
 function step3(){
   var ped='';
   if(FLOW.venta===true){
@@ -807,13 +825,20 @@ function step3(){
       '<button class="btn-go" style="background:linear-gradient(135deg,var(--amber),#d97706)" onclick="saveCall()">Guardar llamada ✓</button>';
   }
   return '<div class="step">Paso 3 · Resultado</div><h3>'+FLOW.cliente+'</h3>'+
-    '<div class="meta-line" style="border-top:none;margin-top:6px;padding-top:0"><span>'+telFmt(FLOW.numero)+'</span><span>'+FLOW.horaInicio+' → '+FLOW.horaFin+' · '+secToShort(FLOW.durSec)+'</span></div>'+
+    '<div class="meta-line" style="border-top:none;margin-top:4px;padding-top:0"><span>'+telFmt(FLOW.numero)+'</span><span>inicio '+FLOW.horaInicio+'</span></div>'+
+    '<label class="fl">Duración real de la llamada</label>'+
+    '<div class="durrow"><input type="number" min="0" id="durMin" value="'+Math.floor(FLOW.durSec/60)+'" oninput="durEdit()"><span class="dsep">min</span>'+
+      '<input type="number" min="0" max="59" id="durSeg" value="'+(FLOW.durSec%60)+'" oninput="durEdit()"><span class="dsep">seg</span>'+
+      '<span class="durtot" id="durTot">'+secToShort(FLOW.durSec)+'</span></div>'+
     '<label class="fl">¿Con quién habló? (encargado)</label>'+
     '<input class="fld" id="contacto" placeholder="Nombre del responsable" style="text-transform:uppercase" value="'+(FLOW.contacto||'')+'" oninput="FLOW.contacto=this.value">'+
     '<label class="fl" style="margin-top:14px">Resultado</label>'+
     '<div class="seg"><button class="'+(FLOW.venta===true?'on':'')+'" onclick="setVenta(true)"><span class="em">&#128722;</span>Logró venta</button>'+
       '<button class="'+(FLOW.venta===false?'on':'')+'" onclick="setVenta(false)"><span class="em">&#10005;</span>Sin venta</button></div>'+ped;
 }
+function durEdit(){var m=parseInt((document.getElementById('durMin')||{}).value,10)||0;var s=parseInt((document.getElementById('durSeg')||{}).value,10)||0;
+  if(s>59)s=59;if(m<0)m=0;if(s<0)s=0;FLOW.durSec=Math.max(1,m*60+s);FLOW.horaFin=addSecToTime(FLOW.horaInicio,FLOW.durSec);
+  var t=document.getElementById('durTot');if(t)t.textContent=secToShort(FLOW.durSec);}
 function setVenta(v){var c=document.getElementById('contacto');if(c)FLOW.contacto=c.value;
   FLOW.venta=v;if(v)FLOW.causal='';else FLOW.lineas=[];renderFlow();}
 function skuFilter(q){var box=document.getElementById('skuResults');if(!box)return;var qu=(q||'').toUpperCase().trim();
@@ -919,7 +944,7 @@ function syncRelevos(){
   SYNCING=true;renderApp();
   var queue=PENDING.slice();var i=0;var okIds=[];var failed=0;
   function next(){
-    if(i>=queue.length){finishSync(okIds,failed);return;}
+    if(i>=queue.length){finishSync(queue,okIds,failed);return;}
     var rec=queue[i];
     gasPost({action:'guardar_llamada',id:rec.id,fecha:rec.fecha,horaInicio:rec.horaInicio,horaFin:rec.horaFin,
       duracionSeg:rec.durSec,transferencista:rec.trans,cliente:rec.cliente,numero:rec.numero,venta:rec.venta,
@@ -928,11 +953,15 @@ function syncRelevos(){
   }
   next();
 }
-function finishSync(okIds,failed){
+function mergeRecords(arr){var have={};for(var i=0;i<RECORDS.length;i++)have[RECORDS[i].id]=1;
+  for(var j=0;j<arr.length;j++)if(!have[arr[j].id])RECORDS.push(arr[j]);}
+function finishSync(queue,okIds,failed){
+  var synced=[];for(var s=0;s<queue.length;s++)if(okIds.indexOf(queue[s].id)>=0)synced.push(queue[s]);
   var keep=[];for(var k=0;k<PENDING.length;k++){if(okIds.indexOf(PENDING[k].id)<0)keep.push(PENDING[k]);}
   PENDING=keep;savePending();SYNCING=false;
-  cargarDesdeGAS(function(){renderApp();
-    if(failed===0)toast(okIds.length+' relevo(s) sincronizado(s) y verificado(s) en la base.');
+  mergeRecords(synced);
+  cargarDesdeGAS(function(){mergeRecords(synced);renderApp();
+    if(failed===0)toast(okIds.length+' relevo(s) sincronizado(s). Ya están en tu base y en "Mi gestión".');
     else alert('Se enviaron '+okIds.length+' relevo(s). '+failed+' no llegaron y quedan guardados en el equipo para reintentar la sincronización.');
   });
 }

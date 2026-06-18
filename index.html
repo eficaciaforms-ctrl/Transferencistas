@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B1220">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>TRANSFER · Kenvue</title>
+<style>
+  :root{
+    --ink:#0B1220;--surf:#131C2E;--surf2:#1B2740;--line:#27344E;
+    --blue:#2563EB;--blue-soft:#3B82F6;--cyan:#22D3EE;
+    --emerald:#10B981;--amber:#F59E0B;--rose:#F43F5E;--violet:#a78bfa;
+    --txt:#E6EDF7;--mut:#93A3BE;--mut2:#5F718F;--r:16px;--shadow:0 18px 40px -22px rgba(0,0,0,.65);
+  }
+  *{box-sizing:border-box}html,body{margin:0;height:100%}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 15% -10%,#16224080,transparent 60%),
+      radial-gradient(1000px 700px at 110% 0%,#0e2a4d66,transparent 55%),var(--ink);
+    color:var(--txt);-webkit-font-smoothing:antialiased}
+  .num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+  ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#23314e;border-radius:20px}
+  .hide{display:none!important}
+
+  #login{min-height:100%;display:grid;place-items:center;padding:24px}
+  .card-login{width:100%;max-width:400px;background:linear-gradient(180deg,var(--surf),#101a2e);border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
+  .brand{display:flex;align-items:center;gap:11px}
+  .logo{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--blue),var(--cyan));color:#031022;font-weight:800;font-size:18px}
+  .brand b{font-size:18px}.brand small{display:block;color:var(--mut);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+  .login-sub{color:var(--mut);font-size:13px;margin:14px 0 20px;line-height:1.5}
+  label.fl{display:block;font-size:12px;color:var(--mut);margin:14px 0 6px}
+  input.fld,select.fld,textarea.fld{width:100%;background:#0c1626;border:1px solid var(--line);color:var(--txt);padding:13px 14px;border-radius:12px;font-size:15px;outline:none}
+  input.fld:focus,select.fld:focus,textarea.fld:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb33}
+  .btn-primary{width:100%;margin-top:20px;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff;font-weight:700;font-size:15px;padding:14px;border-radius:12px;box-shadow:0 12px 26px -12px #2563ebcc}
+  .btn-primary:active{transform:translateY(1px)}
+  .install-btn{width:100%;margin-top:10px;background:#0c1626;border:1px solid var(--line);color:var(--cyan);font-weight:700;font-size:13.5px;padding:12px;border-radius:12px}
+  .hint{margin-top:18px;background:#0c1626;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:11.5px;color:var(--mut);line-height:1.7}
+  .hint b{color:var(--cyan)}.err{color:var(--rose);font-size:12.5px;margin-top:12px;min-height:16px}
+
+  .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0c1424ee;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .topbar .logo{width:32px;height:32px;font-size:15px;border-radius:9px}
+  .topbar .tt{font-weight:700;font-size:15px;line-height:1.1}
+  .topbar .tt small{display:block;font-size:10px;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+  .spacer{flex:1}
+  .bell{position:relative;background:var(--surf2);border:1px solid var(--line);border-radius:11px;width:38px;height:38px;font-size:17px;display:grid;place-items:center}
+  .bell .bdg{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:10px;background:var(--rose);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+  .userchip{display:flex;align-items:center;gap:8px;background:var(--surf2);border:1px solid var(--line);border-radius:30px;padding:5px 11px 5px 6px;font-size:12.5px}
+  .avatar{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;background:linear-gradient(135deg,#334155,#475569);color:#fff}
+  .logout{background:transparent;border:1px solid var(--line);border-radius:9px;padding:7px 10px;color:var(--mut);font-size:12px;font-weight:600}
+
+  .wrap{max-width:520px;margin:0 auto;padding:16px 16px 48px}.dash-wrap{max-width:1180px}
+  .greet h1{margin:0;font-size:21px;letter-spacing:-.02em}.greet p{margin:4px 0 0;color:var(--mut);font-size:13px}.greet{margin:8px 2px 16px}
+  .chip-ok{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--emerald);background:#0c2118;border:1px solid #1d4d39;border-radius:20px;padding:4px 11px;font-weight:700;margin:2px 2px 0}
+  .chip-ok .pulse{width:7px;height:7px;border-radius:50%;background:var(--emerald);animation:pulse 1.4s infinite}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .kpi{background:linear-gradient(180deg,var(--surf),#101a2e);border:1px solid var(--line);border-radius:var(--r);padding:13px 12px}
+  .kpi .lab{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+  .kpi .val{font-size:20px;font-weight:800;margin-top:6px}.kpi .val small{font-size:11px;color:var(--mut);font-weight:600}
+  .kpi.accent .val{color:var(--cyan)}.kpi.green .val{color:var(--emerald)}
+
+  .hero{margin-top:16px;background:linear-gradient(135deg,#16275088,#0e1a30);border:1px solid var(--line);border-radius:20px;padding:20px;text-align:center}
+  .hero .hh{font-size:13px;color:var(--mut);margin-bottom:14px}
+  .start-btn{width:100%;background:linear-gradient(135deg,var(--emerald),#059669);color:#fff;font-weight:800;font-size:16px;padding:17px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 16px 30px -14px #10b981cc}
+  .start-btn:active{transform:translateY(1px)}
+  .testlink{display:block;text-align:center;margin-top:18px;color:var(--mut2);font-size:11.5px;text-decoration:underline;background:none}
+
+  .sec-title{display:flex;align-items:center;justify-content:space-between;margin:24px 4px 11px}
+  .sec-title h2{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+  .sec-title .badge{font-size:11px;color:var(--cyan);background:#0c2233;border:1px solid #134a5e;border-radius:20px;padding:3px 10px;font-weight:700}
+
+  .call{display:flex;gap:12px;align-items:center;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:9px}
+  .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:17px;background:#10243b;color:var(--blue-soft)}
+  .call .who{flex:1;min-width:0}.call .who b{font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .call .who span{font-size:11.5px;color:var(--mut)}.call .who .meta{font-size:11px;color:var(--mut2);margin-top:2px}
+  .call .rt{text-align:right;flex:none}.call .rt .dur{font-weight:800;font-size:15px;color:var(--cyan)}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;border-radius:20px;padding:2px 9px;margin-top:4px}
+  .tag.sale{background:#0c2a1f;color:var(--emerald)}.tag.nosale{background:#2c2310;color:var(--amber)}
+  .empty{text-align:center;color:var(--mut);padding:30px 16px;font-size:13.5px;border:1px dashed var(--line);border-radius:14px}
+
+  .sheet{position:fixed;inset:0;z-index:90;background:#060c16e6;backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center}
+  .sheet-inner{width:100%;max-width:520px;background:linear-gradient(180deg,#13203a,#0d1729);border:1px solid var(--line);border-bottom:none;border-radius:24px 24px 0 0;padding:22px 20px 26px;max-height:94vh;overflow:auto;animation:up .26s cubic-bezier(.2,.8,.2,1)}
+  @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .sheet h3{margin:2px 0 3px;font-size:18px}
+  .sheet .step{font-size:12px;color:var(--cyan);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+  .dial-num{font-size:30px;font-weight:800;text-align:center;letter-spacing:1px;margin:18px 0 4px;min-height:38px}
+  .dial-cli{text-align:center;color:var(--mut);font-size:13px;margin-bottom:4px}
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+  .key{background:#0c1626;border:1px solid var(--line);border-radius:14px;padding:15px 0;font-size:22px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:1px}
+  .key small{font-size:9px;color:var(--mut2);letter-spacing:2px;font-weight:600}.key:active{background:#16223c}.key.back{font-size:20px;color:var(--mut)}
+  .btn-call{width:100%;background:linear-gradient(135deg,var(--emerald),#059669);color:#fff;font-weight:800;font-size:16px;padding:16px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;box-shadow:0 14px 28px -14px #10b981cc}
+  .btn-call[aria-disabled="true"]{opacity:.45;pointer-events:none}
+  .ring-wrap{display:grid;place-items:center;margin:14px 0 8px}.ring{position:relative;width:200px;height:200px}.ring svg{transform:rotate(-90deg)}
+  .ring .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+  .ring .time{font-size:40px;font-weight:800;line-height:1}.ring .cli{font-size:13px;color:var(--mut);margin-top:6px}
+  .live-pill{display:inline-flex;align-items:center;gap:7px;background:#102a1f;color:var(--emerald);border:1px solid #1d4d39;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;margin-top:6px}
+  .live-pill .pulse{width:8px;height:8px;border-radius:50%;background:var(--emerald);animation:pulse 1.3s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 #10b98199}70%{box-shadow:0 0 0 9px #10b98100}100%{box-shadow:0 0 0 0 #10b98100}}
+  .btn-stop{width:100%;background:linear-gradient(135deg,var(--rose),#be123c);color:#fff;font-weight:800;padding:15px;border-radius:14px;margin-top:8px}
+  .meta-line{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}
+  .seg button{padding:14px;border-radius:13px;background:#0c1626;border:1px solid var(--line);font-weight:700;font-size:14px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:5px}
+  .seg button .em{font-size:22px}.seg button.on{border-color:var(--blue);color:var(--txt);background:#10213c;box-shadow:0 0 0 3px #2563eb33}
+  .line{display:flex;gap:8px;align-items:center;background:#0c1626;border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin-top:8px}
+  .line .nm{flex:1;font-size:13px;min-width:0}.line .nm b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.line .nm span{color:var(--mut);font-size:11px}
+  .qty{display:flex;align-items:center;background:#0a1320;border:1px solid var(--line);border-radius:9px}
+  .qty button{width:30px;height:32px;font-size:17px;font-weight:800;color:var(--cyan)}.qty input{width:34px;text-align:center;background:transparent;border:none;color:var(--txt);font-weight:800;font-size:14px}
+  .line .lt{font-weight:800;font-size:13px;width:74px;text-align:right}
+  .totbar{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .totbar .t{font-size:13px;color:var(--mut)}.totbar .v{font-size:26px;font-weight:800;color:var(--emerald)}
+  .addsku{display:flex;gap:8px;margin-top:10px}.addsku select{flex:1}.addsku button{background:var(--blue);color:#fff;font-weight:800;border-radius:11px;padding:0 16px;font-size:20px}
+  .btn-go{width:100%;background:linear-gradient(135deg,var(--emerald),#059669);color:#fff;font-weight:800;padding:15px;border-radius:13px;margin-top:16px}
+  .btn-go[disabled]{opacity:.45;filter:grayscale(.4)}
+
+  .dash-controls{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:14px 2px 18px}
+  .pillset{display:flex;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:3px}
+  .pillset button{padding:8px 14px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--mut)}.pillset button.on{background:var(--blue);color:#fff}
+  select.dsel{background:var(--surf);border:1px solid var(--line);color:var(--txt);padding:9px 12px;border-radius:11px;font-size:13px;font-weight:600}
+  .live-ind{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);font-weight:600}.live-ind .d{width:8px;height:8px;border-radius:50%;background:var(--emerald);animation:pulse 1.4s infinite}
+  .switch{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut);font-weight:600;cursor:pointer;user-select:none}
+  .switch .track{width:38px;height:22px;border-radius:20px;background:#27344e;position:relative;transition:.2s}
+  .switch .track::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s}
+  .switch.on .track{background:var(--emerald)}.switch.on .track::after{left:19px}
+
+  .dkpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+  .dkpi{background:linear-gradient(180deg,var(--surf),#101a2e);border:1px solid var(--line);border-radius:15px;padding:14px 13px;position:relative;overflow:hidden}
+  .dkpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+  .dkpi.c1::before{background:var(--cyan)}.dkpi.c2::before{background:var(--blue)}.dkpi.c3::before{background:var(--violet)}
+  .dkpi.c4::before{background:var(--emerald)}.dkpi.c5::before{background:var(--amber)}.dkpi.c6::before{background:#f472b6}
+  .dkpi .l{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  .dkpi .v{font-size:22px;font-weight:800;margin-top:7px}.dkpi .v small{font-size:11px;color:var(--mut);font-weight:600}.dkpi .sub{font-size:10.5px;color:var(--mut2);margin-top:3px;font-weight:600}
+
+  .panels{display:grid;grid-template-columns:1.3fr 1fr;gap:13px}
+  .panel{background:linear-gradient(180deg,var(--surf),#0f1828);border:1px solid var(--line);border-radius:18px;padding:17px 18px}
+  .panel h3{margin:0 0 4px;font-size:14px}.panel .ph{font-size:11.5px;color:var(--mut);margin-bottom:14px}
+  .bar-row{display:flex;align-items:center;gap:11px;margin-bottom:11px}
+  .bar-row .nm{width:120px;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
+  .bar-track{flex:1;height:24px;background:#0c1626;border-radius:7px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:7px;background:linear-gradient(90deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:flex-end;padding-right:9px;font-size:11px;font-weight:800;color:#02121f;min-width:46px;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .bar-fill.g{background:linear-gradient(90deg,#059669,var(--emerald));color:#03190f}
+  .donut-wrap{display:flex;align-items:center;gap:22px}
+  .donut{width:130px;height:130px;border-radius:50%;flex:none;position:relative}
+  .donut .hole{position:absolute;inset:26px;border-radius:50%;background:#101a2e;display:grid;place-items:center;text-align:center}
+  .donut .hole b{font-size:22px;font-weight:800;display:block}.donut .hole span{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+  .leg{display:flex;flex-direction:column;gap:11px}.leg .li{display:flex;align-items:center;gap:9px;font-size:13px}.leg .sw{width:12px;height:12px;border-radius:4px;flex:none}.leg b{margin-left:4px}
+  .hours{display:flex;align-items:flex-end;gap:5px;height:120px;margin-top:6px}
+  .hours .hbar{flex:1;background:linear-gradient(180deg,var(--blue),#1b3c87);border-radius:5px 5px 0 0;position:relative;min-height:3px;transition:height .5s}
+  .hours .hbar span{position:absolute;bottom:-19px;left:0;right:0;text-align:center;font-size:9px;color:var(--mut2)}
+  .tscroll{overflow-x:auto}
+  table.dt{width:100%;border-collapse:collapse;font-size:12.5px;min-width:680px}
+  table.dt th{text-align:left;color:var(--mut);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;padding:9px 10px;border-bottom:1px solid var(--line)}
+  table.dt td{padding:11px 10px;border-bottom:1px solid #1a2538}table.dt tr:last-child td{border-bottom:none}
+  table.dt td.num,table.dt th.num{text-align:right}
+  .rk{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#1a2538;font-size:11px;font-weight:800;margin-right:8px}
+  .rk.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#3a2400}.rk.r2{background:#334155;color:#cbd5e1}.rk.r3{background:#3b2f1e;color:#fcd34d}
+  .full{grid-column:1/-1}.mono{font-variant-numeric:tabular-nums;color:var(--mut)}
+
+  /* Alertas integridad */
+  .alertbox{border-color:#3a2a3e;background:linear-gradient(180deg,#1d1626,#14101c)}
+  .ab-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .ab-head h3{display:flex;align-items:center;gap:10px}
+  .ab-count{font-size:11px;font-weight:800;color:#fff;background:var(--rose);border-radius:20px;padding:2px 10px}
+  .mini{background:#221a2c;border:1px solid #3a2a3e;color:var(--mut);font-size:11.5px;font-weight:700;border-radius:9px;padding:7px 11px;margin-left:6px}
+  .mini:hover{color:var(--txt)}
+  .alert{display:flex;gap:12px;align-items:flex-start;background:#160f1d;border:1px solid #2e2238;border-left:3px solid var(--rose);border-radius:12px;padding:12px 13px;margin-bottom:9px}
+  .alert.sev-med{border-left-color:var(--amber)}.alert.rd{opacity:.55}
+  .al-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;background:#3a1620;color:var(--rose);font-size:15px;font-weight:800}
+  .alert.sev-med .al-ic{background:#33270f;color:var(--amber)}
+  .al-body{flex:1;min-width:0}.al-body b{font-size:13.5px}
+  .al-tipo{font-size:13px;font-weight:700;color:var(--txt)}
+  .al-det{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.5}
+  .al-meta{font-size:11px;color:var(--mut2);margin-top:6px;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .al-origin{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:800;border-radius:20px;padding:2px 8px;background:#241a2e;color:#c4b5fd;border:1px solid #3a2a4e}
+  .al-origin.real{background:#0c2118;color:var(--emerald);border-color:#1d4d39}
+  .note{background:#0c1626;border:1px solid var(--line);border-radius:12px;padding:11px 13px;font-size:11.5px;color:var(--mut);line-height:1.6;margin-bottom:14px}
+  .note b{color:var(--cyan)}
+
+  @media(max-width:920px){.dkpis{grid-template-columns:repeat(3,1fr)}.panels{grid-template-columns:1fr}}
+  @media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}.dkpis{grid-template-columns:repeat(2,1fr)}.topbar .tt small{display:none}.bar-row .nm{width:92px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="card-login">
+    <div class="brand"><div class="logo">T</div><div><b>TRANSFER</b><small>Kenvue · Llamadas</small></div></div>
+    <p class="login-sub">Las llamadas se inician desde la app. El tiempo se registra solo y el equipo queda bajo control de integridad.</p>
+    <label class="fl" for="u">Usuario</label><input id="u" class="fld" autocomplete="off" placeholder="TRANS1 · ADMIN"/>
+    <label class="fl" for="p">Contraseña</label><input id="p" class="fld" type="password" placeholder="••••••"/>
+    <div class="err" id="loginErr"></div>
+    <button class="btn-primary" onclick="doLogin()">Entrar</button>
+    <button class="install-btn hide" id="installBtn" onclick="doInstall()">⬇ Instalar app en este equipo</button>
+    <div class="hint"><b>Demo</b> · Transferencistas <b>TRANS1</b>…<b>TRANS7</b> (clave = mismo usuario). Administrador <b>ADMIN</b> / <b>ADMIN123$</b>.</div>
+  </div>
+</div>
+
+<div id="app" class="hide">
+  <div class="topbar">
+    <div class="logo">T</div><div class="tt">TRANSFER<small id="tbsub">Kenvue</small></div>
+    <div class="spacer"></div>
+    <button class="bell hide" id="bell" onclick="goAlerts()">🔔<span class="bdg hide" id="bellBdg">0</span></button>
+    <div class="userchip"><span class="avatar" id="avatar">A</span><span id="uname">—</span></div>
+    <button class="logout" onclick="logout()">Salir</button>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script>
+/* ===== DATOS ===== */
+var USERS=[
+  {id:'ADMIN',name:'Sebastián Pereyra',role:'admin',pass:'ADMIN123$'},
+  {id:'TRANS1',name:'Lucía Ramírez',role:'trans',pass:'TRANS1'},
+  {id:'TRANS2',name:'Diego Flores',role:'trans',pass:'TRANS2'},
+  {id:'TRANS3',name:'Carmen Quispe',role:'trans',pass:'TRANS3'},
+  {id:'TRANS4',name:'José Huamán',role:'trans',pass:'TRANS4'},
+  {id:'TRANS5',name:'Andrea Salazar',role:'trans',pass:'TRANS5'},
+  {id:'TRANS6',name:'Renzo Castro',role:'trans',pass:'TRANS6'},
+  {id:'TRANS7',name:'Patricia Vega',role:'trans',pass:'TRANS7'}
+];
+var CLIENTS=['Tambo','Mass','Listo','Oxxo','Repshop','Tottus','Plaza Vea','Metro','Vivanda','Mifarma','Inkafarma','Economax'];
+var CLIENT_TEL={Tambo:'012005700',Mass:'016193000',Listo:'017121515',Oxxo:'013115000',Repshop:'016301000',
+  Tottus:'016133000','Plaza Vea':'016250000',Metro:'016134000',Vivanda:'016133800',Mifarma:'016196000',Inkafarma:'013144040',Economax:'016133900'};
+var SKUS=[
+  {nm:'Neko Antibacterial 125g',precio:2.50},{nm:'Neko Avena 125g',precio:2.70},{nm:'Neko Glicerina 125g',precio:2.90},
+  {nm:'Listerine Cool Mint 250ml',precio:12.90},{nm:'Listerine Zero 500ml',precio:21.50},
+  {nm:"Johnson's Baby Shampoo 200ml",precio:14.90},{nm:"Johnson's Baby Oil 200ml",precio:16.50},
+  {nm:'Neutrogena Facial 100ml',precio:25.90},{nm:'Band-Aid x10',precio:4.50},{nm:'Listerine Display x12',precio:148.00}
+];
+var CAUSALES=['No contesta','Buzón de voz','Sin presupuesto','Ya cuenta con stock','Precio elevado','Pedir cita / reagendar','Encargado no disponible'];
+var CONTACTOS=['Sr. Quispe','Sra. Torres','Sr. Ramos','Sra. Díaz','Sr. Mendoza','Sra. Flores','Sr. Chávez','Sra. León','Sr. Rojas','Sra. Paredes'];
+
+/* ===== ESTADO ===== */
+var SESSION=null,RECORDS=[],ALERTS=[],FLOW=null,TIMER=null;
+var DASH={days:0,trans:'ALL',live:true,int:null,clock:null,view:'panel'};
+var MON={lastW:0,lastP:0,running:false,int:null,cooldownUntil:0};
+var deferredPrompt=null;
+
+/* ===== CONEXION AL BACKEND (Google Apps Script) =====
+   PEGA AQUI tu URL que termina en /exec. Si la dejas vacía, la app funciona en modo demo. */
+var GAS_URL='https://script.google.com/macros/s/AKfycbydWadX2YX6InWXY2sefWP2GNZFcVpxASpIwB7A9jDjgQk810P1IaG-Y5yvDIGU9uD5/exec';
+var ONLINE=(GAS_URL.indexOf('http')===0);
+var LOADING=false;
+
+function gasGet(action,extra,cb){
+  var qs='?action='+encodeURIComponent(action);
+  if(extra){for(var k in extra){if(extra[k]!=null&&extra[k]!=='')qs+='&'+k+'='+encodeURIComponent(extra[k]);}}
+  fetch(GAS_URL+qs).then(function(r){return r.json();}).then(function(j){cb(null,j);}).catch(function(e){cb(e,null);});
+}
+function gasPost(payload,cb){
+  fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(function(r){return r.json();}).then(function(j){if(cb)cb(null,j);}).catch(function(e){if(cb)cb(e,null);});
+}
+function mapLlamada(r){
+  var lineas=[];try{lineas=JSON.parse(r.ProductosJSON||'[]');}catch(e){lineas=[];}
+  return {id:String(r.ID),fecha:String(r.Fecha),trans:String(r.Transferencista),cliente:String(r.Cliente||''),
+    numero:String(r.Numero||''),horaInicio:String(r.HoraInicio||''),horaFin:String(r.HoraFin||''),
+    durSec:Number(r.DuracionSeg||0),venta:String(r.Venta)==='SI',contacto:String(r.Contacto||''),
+    lineas:lineas,total:Number(r.TotalSoles||0),causal:String(r.Causal||'')};
+}
+function mapAlerta(r){
+  return {id:String(r.ID),transId:'',transName:String(r.Transferencista||''),tipo:String(r.Tipo||''),
+    detalle:String(r.Detalle||''),sev:String(r.Severidad||'high'),origin:String(r.Origen||'real'),
+    fecha:String(r.Fecha||''),hora:String(r.Hora||''),read:String(r.Leida)==='SI'};
+}
+function diasAtras(n){var d=new Date();d.setDate(d.getDate()-n);return ymd(d);}
+/* Carga llamadas (ultimos 30 dias) + alertas desde el GAS */
+function cargarDesdeGAS(cb){
+  LOADING=true;var pend=2,errAny=null;
+  gasGet('listar_llamadas',{fecha_desde:diasAtras(30)},function(e,j){
+    if(e||!j||!j.ok){errAny=e||'llamadas';}else{RECORDS=(j.data||[]).map(mapLlamada);}
+    if(--pend===0){LOADING=false;if(cb)cb(errAny);}
+  });
+  gasGet('listar_alertas',null,function(e,j){
+    if(e||!j||!j.ok){errAny=e||'alertas';}else{ALERTS=(j.data||[]).map(mapAlerta);}
+    if(--pend===0){LOADING=false;if(cb)cb(errAny);}
+  });
+}
+
+var _seed=20260617;
+function rnd(){_seed=(_seed*1103515245+12345)&0x7fffffff;return _seed/0x7fffffff;}
+function pick(a){return a[Math.floor(rnd()*a.length)];}
+function ri(a,b){return Math.floor(rnd()*(b-a+1))+a;}
+function pad(n){return n<10?'0'+n:''+n;}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function todayStr(){return ymd(new Date());}
+function fmtS(n){return 'S/ '+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function fmtInt(n){return(''+n).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+function clockNow(){var d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());}
+function secToFull(s){var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return pad(h)+':'+pad(m)+':'+pad(x);}
+function secToShort(s){var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return h>0?(h+':'+pad(m)+':'+pad(x)):(pad(m)+':'+pad(x));}
+function telFmt(n){return n.replace(/(\d{3})(?=\d)/g,'$1 ').trim();}
+function genMobile(){return '9'+ri(10,99)+' '+ri(100,999)+' '+ri(100,999);}
+function addSecToTime(hhmmss,sec){var p=hhmmss.split(':');var t=(+p[0])*3600+(+p[1])*60+(+p[2])+sec;t%=86400;return secToFull(t);}
+
+/* ===== SEED ===== */
+function seed(){
+  RECORDS=[];var now=new Date();
+  for(var dback=29;dback>=0;dback--){
+    var d=new Date();d.setDate(now.getDate()-dback);var fecha=ymd(d);
+    for(var u=1;u<=7;u++){
+      var tid='TRANS'+u;var n=(dback===0)?ri(4,10):ri(8,16);
+      for(var c=0;c<n;c++){
+        var dur=ri(35,560);var conecto=rnd()<0.82;var venta=conecto&&rnd()<0.5;var lineas=[],tot=0;
+        if(venta){var ns=ri(1,4);for(var s=0;s<ns;s++){var sk=pick(SKUS);var q=ri(1,12);var sub=+(sk.precio*q).toFixed(2);tot+=sub;lineas.push({nm:sk.nm,precio:sk.precio,cantidad:q,subtotal:sub});}}
+        if(!conecto)dur=ri(8,30);
+        var hi=pad(ri(8,18))+':'+pad(ri(0,59))+':'+pad(ri(0,59));
+        RECORDS.push({id:d.getTime()+'-'+tid+'-'+c,fecha:fecha,trans:tid,cliente:pick(CLIENTS),numero:genMobile(),
+          horaInicio:hi,horaFin:addSecToTime(hi,dur),durSec:dur,venta:venta,contacto:conecto?pick(CONTACTOS):'—',
+          lineas:lineas,total:+tot.toFixed(2),
+          causal:venta?'':(conecto?pick(['Sin presupuesto','Ya cuenta con stock','Precio elevado','Pedir cita / reagendar','Encargado no disponible']):pick(['No contesta','Buzón de voz']))});
+      }
+    }
+  }
+}
+function seedAlerts(){
+  var t=todayStr();
+  ALERTS=[
+    {id:'a3',transId:'TRANS3',transName:'Carmen Quispe',tipo:'App sospechosa detectada',detalle:'Se detectó "ClockSync Pro", una app que permite modificar la hora del sistema, instalada en el equipo.',sev:'high',origin:'ejemplo',fecha:t,hora:'09:12:40',read:false},
+    {id:'a5',transId:'TRANS5',transName:'Andrea Salazar',tipo:'Hora automática desactivada',detalle:'El equipo tiene apagada la opción "Fecha y hora automática" del sistema. Permite alterar manualmente los registros.',sev:'high',origin:'ejemplo',fecha:t,hora:'10:48:05',read:false},
+    {id:'a2',transId:'TRANS2',transName:'Diego Flores',tipo:'Modo desarrollador activo',detalle:'Opciones de desarrollador y depuración USB habilitadas en el equipo.',sev:'med',origin:'ejemplo',fecha:t,hora:'11:30:22',read:false}
+  ];
+}
+if(!ONLINE){seed();seedAlerts();}
+
+/* ===== PWA ===== */
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;var b=document.getElementById('installBtn');if(b)b.classList.remove('hide');});
+function doInstall(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;}else{alert('Abre el menú del navegador (⋮) y elige "Agregar a pantalla de inicio" / "Instalar app".');}}
+if('serviceWorker' in navigator){window.addEventListener('load',function(){try{navigator.serviceWorker.register('./sw.js');}catch(e){}});}
+
+/* ===== LOGIN ===== */
+function doLogin(){
+  var id=(document.getElementById('u').value||'').trim().toUpperCase();
+  var pw=(document.getElementById('p').value||'').trim();
+  var us=null;for(var i=0;i<USERS.length;i++)if(USERS[i].id===id)us=USERS[i];
+  var err=document.getElementById('loginErr');
+  if(!us){err.textContent='Usuario no reconocido.';return;}
+  if(us.pass!==pw){err.textContent='Contraseña incorrecta.';return;}
+  err.textContent='';SESSION=us;
+  document.getElementById('login').classList.add('hide');
+  document.getElementById('app').classList.remove('hide');
+  document.getElementById('uname').textContent=us.name;
+  document.getElementById('avatar').textContent=us.name.charAt(0);
+  document.getElementById('tbsub').textContent=us.role==='admin'?'Panel ejecutivo':'Mi jornada';
+  var bell=document.getElementById('bell');
+  if(us.role==='admin'){
+    bell.classList.remove('hide');DASH.view='panel';
+    if(ONLINE){
+      document.getElementById('view').innerHTML='<div class="wrap dash-wrap"><div class="empty">Cargando datos del servidor…</div></div>';
+      cargarDesdeGAS(function(err){renderDash();startLive();updateBell();adminEntryNotify();});
+    }else{renderDash();startLive();updateBell();adminEntryNotify();}
+  }else{
+    bell.classList.add('hide');monStart();
+    if(ONLINE){
+      document.getElementById('view').innerHTML='<div class="wrap"><div class="empty">Cargando…</div></div>';
+      cargarDesdeGAS(function(err){renderApp();});
+    }else{renderApp();}
+  }
+}
+function logout(){stopLive();monStop();SESSION=null;FLOW=null;if(TIMER){clearInterval(TIMER);TIMER=null;}
+  document.getElementById('app').classList.add('hide');document.getElementById('login').classList.remove('hide');document.getElementById('p').value='';}
+
+/* ===== CONTROL DE INTEGRIDAD (real, lado app) ===== */
+function monStart(){
+  if(!window.performance||!performance.now)return;
+  MON.lastW=Date.now();MON.lastP=performance.now();MON.running=true;
+  MON.int=setInterval(monCheck,4000);
+}
+function monStop(){MON.running=false;if(MON.int){clearInterval(MON.int);MON.int=null;}}
+function monCheck(){
+  if(document.visibilityState!=='visible')return;
+  var w=Date.now(),p=performance.now();
+  var dW=w-MON.lastW,dP=p-MON.lastP;
+  var jump=dW-dP; /* ~0 normal; positivo=hora adelantada; negativo=hora atrasada */
+  if(Date.now()<MON.cooldownUntil){MON.lastW=w;MON.lastP=p;return;}
+  if(jump>15000||jump<-3000){
+    var dir=jump<0?'atrasó':'adelantó';
+    raiseAlert(SESSION.id,'Cambio de hora del equipo',
+      'El reloj del dispositivo se '+dir+' aprox. '+Math.abs(Math.round(jump/1000))+' s mientras la app estaba activa. Esto altera los tiempos de llamada.','high','real');
+    MON.cooldownUntil=Date.now()+20000;
+  }
+  MON.lastW=w;MON.lastP=p;
+}
+document.addEventListener('visibilitychange',function(){
+  if(!MON.running)return;
+  if(document.visibilityState==='visible'){
+    var w=Date.now(),p=performance.now();var jump=(w-MON.lastW)-(p-MON.lastP);
+    if(jump<-3000&&Date.now()>=MON.cooldownUntil){
+      raiseAlert(SESSION.id,'Cambio de hora del equipo','El reloj del dispositivo se atrasó aprox. '+Math.abs(Math.round(jump/1000))+' s.','high','real');
+      MON.cooldownUntil=Date.now()+20000;
+    }
+    MON.lastW=w;MON.lastP=p;
+  }
+});
+
+function raiseAlert(transId,tipo,detalle,sev,origin){
+  var d=new Date();
+  var a={id:Date.now()+'-'+Math.floor(Math.random()*9999),transId:transId,transName:uname(transId),
+    tipo:tipo,detalle:detalle,sev:sev||'high',origin:origin||'real',fecha:ymd(d),
+    hora:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()),read:false};
+  if(ONLINE){
+    gasPost({action:'guardar_alerta',transferencista:a.transName,tipo:a.tipo,detalle:a.detalle,
+      severidad:a.sev,origen:a.origin,fecha:a.fecha,hora:a.hora},function(){});
+  }
+  ALERTS.unshift(a);
+  notifySystem(a);
+  if(SESSION&&SESSION.role==='admin'&&DASH.view==='panel')renderDash();
+  updateBell();
+}
+/* La notificación del sistema SOLO se dispara para el administrador */
+function notifySystem(a){
+  if(!SESSION||SESSION.role!=='admin')return;
+  if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
+  try{
+    var title='⚠ Integridad · '+a.transName;
+    var body=a.tipo+' — '+a.fecha+' '+a.hora;
+    if(navigator.serviceWorker&&navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'integrity-alert',title:title,body:body});
+    }else{new Notification(title,{body:body,icon:'./icon-192.png'});}
+  }catch(e){}
+}
+function reqPerm(){if(typeof Notification==='undefined'){alert('Este navegador no soporta notificaciones.');return;}
+  Notification.requestPermission(function(p){if(p==='granted')alert('Notificaciones activadas para el administrador.');});}
+function adminEntryNotify(){
+  var unread=0;for(var i=0;i<ALERTS.length;i++)if(!ALERTS[i].read)unread++;
+  if(unread>0&&typeof Notification!=='undefined'&&Notification.permission==='granted'){
+    try{navigator.serviceWorker&&navigator.serviceWorker.controller
+      ?navigator.serviceWorker.controller.postMessage({type:'integrity-alert',title:'🔔 '+unread+' alertas de integridad',body:'Tienes '+unread+' eventos por revisar en el panel.'})
+      :new Notification('🔔 '+unread+' alertas de integridad',{body:'Tienes '+unread+' eventos por revisar.',icon:'./icon-192.png'});}catch(e){}
+  }
+}
+function updateBell(){
+  var unread=0;for(var i=0;i<ALERTS.length;i++)if(!ALERTS[i].read)unread++;
+  var b=document.getElementById('bellBdg');if(!b)return;
+  if(unread>0){b.textContent=unread;b.classList.remove('hide');}else{b.classList.add('hide');}
+}
+function goAlerts(){DASH.view='panel';renderDash();window.scrollTo(0,0);}
+function markAll(){
+  var ids=[];for(var i=0;i<ALERTS.length;i++){ALERTS[i].read=true;ids.push(ALERTS[i].id);}
+  if(ONLINE)gasPost({action:'marcar_leidas',ids:ids},function(){});
+  updateBell();renderDash();
+}
+
+/* ===== APP TRANSFERENCISTA ===== */
+function myToday(){var t=todayStr(),r=[];for(var i=0;i<RECORDS.length;i++)if(RECORDS[i].trans===SESSION.id&&RECORDS[i].fecha===t)r.push(RECORDS[i]);
+  r.sort(function(a,b){return a.horaInicio<b.horaInicio?1:-1;});return r;}
+function renderApp(){
+  var recs=myToday();var seg=0,ventas=0,ven=0;
+  for(var i=0;i<recs.length;i++){seg+=recs[i].durSec;if(recs[i].venta){ven++;ventas+=recs[i].total;}}
+  var first=SESSION.name.split(' ')[0];
+  var html='<div class="wrap">'+
+    '<div class="greet"><h1>Hola, '+first+'</h1><p>'+new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})+'</p>'+
+      '<span class="chip-ok"><span class="pulse"></span>Control de integridad activo</span></div>'+
+    '<div class="kpis">'+
+      '<div class="kpi accent"><div class="lab">Tiempo en llamadas</div><div class="val num">'+secToFull(seg)+'</div></div>'+
+      '<div class="kpi"><div class="lab">Llamadas</div><div class="val num">'+recs.length+'</div></div>'+
+      '<div class="kpi"><div class="lab">Ventas</div><div class="val num">'+ven+'</div></div>'+
+      '<div class="kpi green"><div class="lab">Soles</div><div class="val num">'+ventas.toFixed(0)+'<small> S/</small></div></div>'+
+    '</div>'+
+    '<div class="hero"><div class="hh">Inicia la llamada aquí. El número, la hora y la duración se registran automáticamente.</div>'+
+      '<button class="start-btn" onclick="openFlow()">☎ Iniciar llamada</button></div>'+
+    '<div class="sec-title"><h2>Llamadas de hoy</h2><span class="badge">'+recs.length+' registradas</span></div>'+
+    (recs.length?recs.map(callCard).join(''):'<div class="empty">Aún no registras llamadas hoy.<br>Pulsa <b>Iniciar llamada</b> para empezar.</div>')+
+    '<button class="testlink" onclick="testIntegrity()">Probar alerta de integridad (demo)</button>'+
+  '</div>';
+  document.getElementById('view').innerHTML=html;
+}
+function testIntegrity(){
+  raiseAlert(SESSION.id,'Cambio de hora del equipo','Prueba: intento simulado de modificar la hora del dispositivo durante la jornada.','high','real');
+  alert('Alerta enviada al administrador. Cierra sesión e ingresa como ADMIN para verla en el panel.');
+}
+function callCard(r){
+  var tag=r.venta?'<span class="tag sale">'+fmtS(r.total)+'</span>':'<span class="tag nosale">'+r.causal+'</span>';
+  return '<div class="call"><div class="ic">☎</div><div class="who"><b>'+r.cliente+'</b><span>'+telFmt(r.numero)+'</span>'+
+    '<div class="meta">'+r.horaInicio+' → '+r.horaFin+' · '+(r.contacto!=='—'?r.contacto:'sin contacto')+'</div>'+tag+'</div>'+
+    '<div class="rt"><div class="dur num">'+secToShort(r.durSec)+'</div></div></div>';
+}
+
+/* ===== FLUJO LLAMADA ===== */
+function openFlow(){FLOW={step:1,cliente:'',numero:'',startTs:0,horaInicio:'',horaFin:'',durSec:0,venta:null,contacto:'',lineas:[],causal:''};renderFlow();}
+function closeFlow(){if(TIMER){clearInterval(TIMER);TIMER=null;}FLOW=null;var s=document.getElementById('sheet');if(s)s.remove();}
+function renderFlow(){var s=document.getElementById('sheet');if(s)s.remove();
+  var div=document.createElement('div');div.className='sheet';div.id='sheet';
+  div.innerHTML='<div class="sheet-inner">'+(FLOW.step===1?step1():FLOW.step===2?step2():step3())+'</div>';
+  document.body.appendChild(div);}
+function step1(){
+  var opts='<option value="">Selecciona cadena / mini cadena…</option>';
+  for(var i=0;i<CLIENTS.length;i++)opts+='<option'+(FLOW.cliente===CLIENTS[i]?' selected':'')+'>'+CLIENTS[i]+'</option>';
+  var keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];var sub={'2':'ABC','3':'DEF','4':'GHI','5':'JKL','6':'MNO','7':'PQRS','8':'TUV','9':'WXYZ'};
+  var kp='';for(var k=0;k<keys.length;k++){if(keys[k]===''){kp+='<div></div>';continue;}
+    if(keys[k]==='⌫')kp+='<button class="key back" onclick="dialDel()">⌫</button>';
+    else kp+='<button class="key" onclick="dialPush(\''+keys[k]+'\')">'+keys[k]+'<small>'+(sub[keys[k]]||'')+'</small></button>';}
+  var disabled=(!FLOW.cliente||FLOW.numero.length<6);
+  return '<div class="step">Paso 1 de 3 · Marcar</div><h3>Nueva llamada</h3>'+
+    '<label class="fl">Cliente</label><select class="fld" id="selCli" onchange="onCli(this.value)">'+opts+'</select>'+
+    '<div class="dial-num num" id="dialNum">'+(FLOW.numero?telFmt(FLOW.numero):'<span style="color:var(--mut2)">—</span>')+'</div>'+
+    '<div class="dial-cli">'+(FLOW.cliente||'Selecciona el cliente para prellenar el número')+'</div>'+
+    '<div class="keypad">'+kp+'</div>'+
+    '<a class="btn-call" id="callBtn" aria-disabled="'+disabled+'" href="tel:'+FLOW.numero.replace(/\s/g,'')+'" onclick="startCall(event)">☎ Llamar e iniciar registro</a>'+
+    '<div class="meta-line"><span>Se registra automáticamente</span><span>número · inicio · fin · duración</span></div>';
+}
+function onCli(v){FLOW.cliente=v;if(v&&CLIENT_TEL[v])FLOW.numero=CLIENT_TEL[v];renderFlow();}
+function dialPush(d){FLOW.numero=(FLOW.numero+d).slice(0,12);refreshDial();}
+function dialDel(){FLOW.numero=FLOW.numero.slice(0,-1);refreshDial();}
+function refreshDial(){document.getElementById('dialNum').innerHTML=FLOW.numero?telFmt(FLOW.numero):'<span style="color:var(--mut2)">—</span>';
+  var b=document.getElementById('callBtn');var dis=(!FLOW.cliente||FLOW.numero.length<6);
+  b.setAttribute('aria-disabled',dis);b.setAttribute('href','tel:'+FLOW.numero.replace(/\s/g,''));}
+function startCall(ev){
+  if(!FLOW.cliente||FLOW.numero.length<6){if(ev)ev.preventDefault();alert('Selecciona cliente e ingresa un número válido.');return;}
+  FLOW.startTs=Date.now();FLOW.horaInicio=clockNow();FLOW.step=2;
+  setTimeout(function(){renderFlow();TIMER=setInterval(tickTimer,250);tickTimer();},30);
+}
+function step2(){var R=92,C=2*Math.PI*R;
+  return '<div class="step">Paso 2 · Llamada en curso</div><h3>'+FLOW.cliente+'</h3>'+
+    '<div style="text-align:center;color:var(--mut);font-size:13px">'+telFmt(FLOW.numero)+'</div>'+
+    '<div style="text-align:center"><span class="live-pill"><span class="pulse"></span>Registrando tiempo</span></div>'+
+    '<div class="ring-wrap"><div class="ring"><svg width="200" height="200" viewBox="0 0 200 200">'+
+      '<circle cx="100" cy="100" r="'+R+'" fill="none" stroke="#1b2740" stroke-width="13"/>'+
+      '<circle id="prog" cx="100" cy="100" r="'+R+'" fill="none" stroke="url(#g)" stroke-width="13" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+C+'"/>'+
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981"/><stop offset="1" stop-color="#22D3EE"/></linearGradient></defs>'+
+      '</svg><div class="center"><div class="time num" id="clock">00:00</div><div class="cli">inicio '+FLOW.horaInicio+'</div></div></div></div>'+
+    '<button class="btn-stop" onclick="stopCall()">■ Finalizar llamada</button>';
+}
+function tickTimer(){var el=(Date.now()-FLOW.startTs)/1000;var c=document.getElementById('clock');if(c)c.textContent=secToShort(Math.floor(el));
+  var p=document.getElementById('prog');if(p){var R=92,C=2*Math.PI*R;var frac=Math.min(el/(10*60),1);p.setAttribute('stroke-dashoffset',C*(1-frac));}}
+function stopCall(){if(TIMER){clearInterval(TIMER);TIMER=null;}
+  FLOW.durSec=Math.max(1,Math.round((Date.now()-FLOW.startTs)/1000));FLOW.horaFin=clockNow();FLOW.step=3;renderFlow();}
+function step3(){
+  var pedHtml='';
+  if(FLOW.venta===true){
+    var skuOpts='<option value="">Agregar producto vendido…</option>';
+    for(var i=0;i<SKUS.length;i++)skuOpts+='<option value="'+i+'">'+SKUS[i].nm+' — '+fmtS(SKUS[i].precio)+'</option>';
+    var lines='',tot=0;
+    for(var j=0;j<FLOW.lineas.length;j++){var L=FLOW.lineas[j];tot+=L.subtotal;
+      lines+='<div class="line"><div class="nm"><b>'+L.nm+'</b><span>'+fmtS(L.precio)+' c/u</span></div>'+
+        '<div class="qty"><button onclick="qstep('+j+',-1)">−</button><input class="num" value="'+L.cantidad+'" readonly><button onclick="qstep('+j+',1)">+</button></div>'+
+        '<div class="lt num">'+fmtS(L.subtotal)+'</div></div>';}
+    pedHtml='<label class="fl">¿Qué vendió?</label><div class="addsku"><select class="fld" id="addSku">'+skuOpts+'</select><button onclick="addSku()">+</button></div>'+
+      lines+'<div class="totbar"><span class="t">Total vendido</span><span class="v num">'+fmtS(tot)+'</span></div>'+
+      '<button class="btn-go" '+(FLOW.lineas.length?'':'disabled')+' onclick="saveCall()">Guardar llamada ✓</button>';
+  }else if(FLOW.venta===false){
+    var co='<option value="">Selecciona el motivo…</option>';
+    for(var k=0;k<CAUSALES.length;k++)co+='<option'+(FLOW.causal===CAUSALES[k]?' selected':'')+'>'+CAUSALES[k]+'</option>';
+    pedHtml='<label class="fl">¿Por qué no se concretó la venta?</label><select class="fld" id="selCausal" onchange="FLOW.causal=this.value">'+co+'</select>'+
+      '<button class="btn-go" style="background:linear-gradient(135deg,var(--amber),#d97706)" onclick="saveCall()">Guardar llamada ✓</button>';
+  }
+  return '<div class="step">Paso 3 · Resultado</div><h3>'+FLOW.cliente+'</h3>'+
+    '<div class="meta-line" style="border-top:none;margin-top:6px;padding-top:0"><span>'+telFmt(FLOW.numero)+'</span><span>'+FLOW.horaInicio+' → '+FLOW.horaFin+' · '+secToShort(FLOW.durSec)+'</span></div>'+
+    '<label class="fl">¿Con quién habló? (encargado de la cadena)</label>'+
+    '<input class="fld" id="contacto" placeholder="Nombre del responsable" value="'+(FLOW.contacto||'')+'" oninput="FLOW.contacto=this.value"/>'+
+    '<label class="fl" style="margin-top:14px">Resultado</label>'+
+    '<div class="seg"><button class="'+(FLOW.venta===true?'on':'')+'" onclick="setVenta(true)"><span class="em">🛒</span>Logró venta</button>'+
+      '<button class="'+(FLOW.venta===false?'on':'')+'" onclick="setVenta(false)"><span class="em">✕</span>Sin venta</button></div>'+pedHtml;
+}
+function setVenta(v){FLOW.venta=v;if(v)FLOW.causal='';else FLOW.lineas=[];renderFlow();var c=document.getElementById('contacto');if(c)c.value=FLOW.contacto||'';}
+function addSku(){var sel=document.getElementById('addSku');var idx=sel.value;if(idx==='')return;var sk=SKUS[+idx];
+  FLOW.lineas.push({nm:sk.nm,precio:sk.precio,cantidad:1,subtotal:sk.precio});renderFlow();}
+function qstep(j,d){var L=FLOW.lineas[j];L.cantidad=Math.max(1,L.cantidad+d);L.subtotal=+(L.precio*L.cantidad).toFixed(2);renderFlow();}
+function saveCall(){
+  if(!FLOW.contacto||!FLOW.contacto.trim()){alert('Indica con quién habló.');return;}
+  if(FLOW.venta===null){alert('Marca si hubo venta o no.');return;}
+  if(FLOW.venta===false&&!FLOW.causal){alert('Selecciona el motivo de no venta.');return;}
+  var total=0;for(var i=0;i<FLOW.lineas.length;i++)total+=FLOW.lineas[i].subtotal;
+  var rec={id:Date.now()+'-'+SESSION.id,fecha:todayStr(),trans:SESSION.id,cliente:FLOW.cliente,numero:FLOW.numero,
+    horaInicio:FLOW.horaInicio,horaFin:FLOW.horaFin,durSec:FLOW.durSec,venta:!!FLOW.venta,contacto:FLOW.contacto.trim(),
+    lineas:FLOW.lineas.slice(),total:+total.toFixed(2),causal:FLOW.venta?'':FLOW.causal};
+  if(ONLINE){
+    gasPost({action:'guardar_llamada',id:rec.id,fecha:rec.fecha,horaInicio:rec.horaInicio,horaFin:rec.horaFin,
+      duracionSeg:rec.durSec,transferencista:rec.trans,cliente:rec.cliente,numero:rec.numero,venta:rec.venta,
+      contacto:rec.contacto,productos:rec.lineas,totalSoles:rec.total,causal:rec.causal,deviceTime:Date.now()},
+      function(err){if(err)alert('No se pudo guardar en el servidor. Revisa tu conexión.');});
+  }
+  RECORDS.push(rec);
+  closeFlow();renderApp();
+}
+
+/* ===== DASHBOARD ===== */
+function filtered(){var t=new Date(),from=new Date();from.setDate(t.getDate()-DASH.days);
+  var fromStr=DASH.days===0?todayStr():ymd(from);var out=[];
+  for(var i=0;i<RECORDS.length;i++){var r=RECORDS[i];if(r.fecha<fromStr)continue;
+    if(DASH.days===0&&r.fecha!==todayStr())continue;if(DASH.trans!=='ALL'&&r.trans!==DASH.trans)continue;out.push(r);}return out;}
+function uname(id){for(var i=0;i<USERS.length;i++)if(USERS[i].id===id)return USERS[i].name;return id;}
+function shortName(id){var p=uname(id).split(' ');return p[0]+' '+(p[1]?p[1].charAt(0)+'.':'');}
+
+function renderDash(){
+  var recs=filtered();var seg=0,ventas=0,ven=0;
+  for(var i=0;i<recs.length;i++){seg+=recs[i].durSec;if(recs[i].venta){ven++;ventas+=recs[i].total;}}
+  var nC=recs.length;var prom=nC?Math.round(seg/nC):0;var conv=nC?(ven/nC*100):0;
+  var transOpts='<option value="ALL">Todos los transferencistas</option>';
+  for(var u=1;u<=7;u++){var id='TRANS'+u;transOpts+='<option value="'+id+'"'+(DASH.trans===id?' selected':'')+'>'+uname(id)+'</option>';}
+  var html='<div class="wrap dash-wrap">'+
+    '<div class="greet" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">'+
+      '<div><h1>Panel ejecutivo</h1><p>Tiempo de llamadas, resultados y control de integridad · tiempo real</p></div>'+
+      '<div class="live-ind"><span class="d"></span> Actualizado <span id="upAt">'+clockNow()+'</span></div></div>'+
+    alertsPanel()+
+    '<div class="dash-controls"><div class="pillset">'+dbtn(0,'Hoy')+dbtn(1,'Ayer')+dbtn(7,'7 días')+dbtn(30,'30 días')+'</div>'+
+      '<select class="dsel" onchange="DASH.trans=this.value;renderDash()">'+transOpts+'</select>'+
+      '<div class="spacer"></div><div class="switch '+(DASH.live?'on':'')+'" onclick="toggleLive()"><span class="track"></span> '+(ONLINE?'Auto-actualizar':'Demo en vivo')+'</div></div>'+
+    '<div class="dkpis">'+
+      dkpi('c1','Tiempo en llamadas',secToFull(seg),'',nC+' llamadas')+
+      dkpi('c2','Llamadas',fmtInt(nC),'',ven+' con venta')+
+      dkpi('c3','Duración prom.',secToShort(prom),'','por llamada')+
+      dkpi('c4','Ventas',ventas.toFixed(0),'S/',fmtInt(ven)+' pedidos')+
+      dkpi('c5','Conversión',conv.toFixed(0),'%','ventas / llamadas')+
+      dkpi('c6','Alertas',fmtInt(ALERTS.length),'','integridad')+
+    '</div>'+
+    '<div class="panels">'+
+      '<div class="panel"><h3>Tiempo en llamadas por transferencista</h3><div class="ph">Minutos al teléfono en el periodo</div>'+barsTime(recs)+'</div>'+
+      '<div class="panel"><h3>Resultado de llamadas</h3><div class="ph">Venta vs. sin venta</div>'+donutRes(recs)+'</div></div>'+
+    '<div class="panels" style="margin-top:13px">'+
+      '<div class="panel"><h3>Llamadas por cadena</h3><div class="ph">Dónde se concentra la gestión</div>'+barsClient(recs)+'</div>'+
+      '<div class="panel"><h3>Ventas por transferencista</h3><div class="ph">Soles generados</div>'+barsSales(recs)+'</div></div>'+
+    '<div class="panel full" style="margin-top:13px"><h3>Distribución horaria</h3><div class="ph">Llamadas por hora del día</div>'+hoursChart(recs)+'</div>'+
+    '<div class="panel full" style="margin-top:13px"><h3>Productividad del equipo</h3><div class="ph">Ordenado por tiempo en llamadas</div>'+rankTable(recs)+'</div>'+
+    '<div class="panel full" style="margin-top:13px"><h3>Registro de llamadas</h3><div class="ph">Número, inicio, fin y duración automáticos</div>'+detailTable(recs)+'</div>'+
+  '</div>';
+  document.getElementById('view').innerHTML=html;updateBell();
+}
+function alertsPanel(){
+  var unread=0;for(var i=0;i<ALERTS.length;i++)if(!ALERTS[i].read)unread++;
+  var head='<div class="panel full alertbox"><div class="ab-head"><h3>🔔 Alertas de integridad'+(unread?' <span class="ab-count">'+unread+' nuevas</span>':'')+'</h3>'+
+    '<div><button class="mini" onclick="reqPerm()">Activar notificaciones</button><button class="mini" onclick="markAll()">Marcar leídas</button></div></div>'+
+    '<div class="ph">Visibles solo para el administrador · transferencista, evento, fecha y hora</div>'+
+    '<div class="note"><b>Cómo leerlo:</b> "control real" = detectado por la app en este equipo (cambio de hora). "módulo nativo (ejemplo)" = requiere la app Android complementaria para detectar apps sospechosas, hora automática apagada, GPS falso o root.</div>';
+  if(!ALERTS.length)return head+'<div class="empty">Sin alertas. El equipo opera con normalidad.</div></div>';
+  var body='';for(var j=0;j<ALERTS.length&&j<12;j++)body+=alertCard(ALERTS[j]);
+  return head+body+'</div>';
+}
+function alertCard(a){
+  var oc=a.origin==='real'?'control real':(a.origin==='ejemplo'?'módulo nativo (ejemplo)':'simulación');
+  var ocls=a.origin==='real'?' real':'';
+  return '<div class="alert sev-'+a.sev+(a.read?' rd':'')+'"><div class="al-ic">'+(a.sev==='high'?'⚠':'•')+'</div>'+
+    '<div class="al-body"><b>'+a.transName+'</b> · <span class="al-tipo">'+a.tipo+'</span>'+
+    '<div class="al-det">'+a.detalle+'</div>'+
+    '<div class="al-meta">'+a.fecha+' · '+a.hora+'<span class="al-origin'+ocls+'">'+oc+'</span></div></div></div>';
+}
+function distinctTrans(recs){var m={};for(var i=0;i<recs.length;i++)m[recs[i].trans]=1;var n=0;for(var k in m)n++;return n||1;}
+function dbtn(d,l){return '<button class="'+(DASH.days===d?'on':'')+'" onclick="DASH.days='+d+';renderDash()">'+l+'</button>';}
+function dkpi(c,l,v,u,sub){return '<div class="dkpi '+c+'"><div class="l">'+l+'</div><div class="v num">'+v+(u?'<small> '+u+'</small>':'')+'</div><div class="sub">'+sub+'</div></div>';}
+function aggBy(recs,key,field){var m={};for(var i=0;i<recs.length;i++){var k=recs[i][key];if(!m[k])m[k]=0;m[k]+=field==='dur'?recs[i].durSec:(field==='total'?recs[i].total:1);}
+  var a=[];for(var x in m)a.push({k:x,v:m[x]});a.sort(function(p,q){return q.v-p.v;});return a;}
+function emptyP(){return '<div class="empty">Sin datos en este periodo.</div>';}
+function barRow(name,v,max,label,green){var pct=max?Math.max(8,(v/max*100)):0;
+  return '<div class="bar-row"><div class="nm">'+name+'</div><div class="bar-track"><div class="bar-fill'+(green?' g':'')+'" style="width:'+pct+'%">'+label+'</div></div></div>';}
+function barsTime(recs){var a=aggBy(recs,'trans','dur');if(!a.length)return emptyP();var max=a[0].v,h='';for(var i=0;i<a.length;i++)h+=barRow(shortName(a[i].k),a[i].v,max,secToShort(a[i].v));return h;}
+function barsClient(recs){var a=aggBy(recs,'cliente','n');if(!a.length)return emptyP();a=a.slice(0,8);var max=a[0].v,h='';for(var i=0;i<a.length;i++)h+=barRow(a[i].k,a[i].v,max,fmtInt(a[i].v));return h;}
+function barsSales(recs){var a=aggBy(recs,'trans','total');if(!a.length)return emptyP();var max=a[0].v||1,h='';for(var i=0;i<a.length;i++)h+=barRow(shortName(a[i].k),a[i].v,max,fmtS(a[i].v),true);return h;}
+function donutRes(recs){var ven=0,nov=0;for(var i=0;i<recs.length;i++){if(recs[i].venta)ven++;else nov++;}var tot=ven+nov;var deg=tot?(ven/tot*360):0;var pv=tot?Math.round(ven/tot*100):0;
+  return '<div class="donut-wrap"><div class="donut" style="background:conic-gradient(var(--emerald) 0deg '+deg+'deg,#2c3a52 '+deg+'deg 360deg)">'+
+    '<div class="hole"><b class="num">'+pv+'%</b><span>conversión</span></div></div>'+
+    '<div class="leg"><div class="li"><span class="sw" style="background:var(--emerald)"></span>Con venta <b class="num">'+ven+'</b></div>'+
+    '<div class="li"><span class="sw" style="background:#2c3a52"></span>Sin venta <b class="num">'+nov+'</b></div></div></div>';}
+function hoursChart(recs){var b={};for(var h=8;h<=19;h++)b[h]=0;
+  for(var i=0;i<recs.length;i++){var hh=parseInt(recs[i].horaInicio.split(':')[0],10);if(b[hh]!==undefined)b[hh]++;}
+  var max=1;for(var k in b)if(b[k]>max)max=b[k];var out='<div class="hours">';
+  for(var hr=8;hr<=19;hr++)out+='<div class="hbar" style="height:'+(b[hr]/max*100)+'%" title="'+b[hr]+'"><span>'+hr+'h</span></div>';return out+'</div><div style="height:14px"></div>';}
+function rankTable(recs){var ag={};
+  for(var i=0;i<recs.length;i++){var r=recs[i];if(!ag[r.trans])ag[r.trans]={seg:0,n:0,ven:0,ventas:0};var a=ag[r.trans];a.seg+=r.durSec;a.n++;if(r.venta){a.ven++;a.ventas+=r.total;}}
+  var arr=[];for(var k in ag){var a=ag[k];arr.push({id:k,seg:a.seg,n:a.n,prom:a.n?Math.round(a.seg/a.n):0,conv:a.n?a.ven/a.n*100:0,ventas:a.ventas});}
+  arr.sort(function(x,y){return y.seg-x.seg;});if(!arr.length)return emptyP();
+  var h='<div class="tscroll"><table class="dt"><thead><tr><th>Transferencista</th><th class="num">Tiempo</th><th class="num">Llamadas</th><th class="num">Dur. prom.</th><th class="num">Conv.</th><th class="num">Ventas</th></tr></thead><tbody>';
+  for(var i=0;i<arr.length;i++){var a=arr[i];var rc=i<3?'r'+(i+1):'';
+    h+='<tr><td><span class="rk '+rc+'">'+(i+1)+'</span>'+uname(a.id)+'</td><td class="num mono">'+secToFull(a.seg)+'</td><td class="num">'+a.n+'</td><td class="num mono">'+secToShort(a.prom)+'</td><td class="num">'+a.conv.toFixed(0)+'%</td><td class="num">'+fmtS(a.ventas)+'</td></tr>';}
+  return h+'</tbody></table></div>';}
+function detailTable(recs){var r=recs.slice().sort(function(a,b){return(a.fecha+a.horaInicio)<(b.fecha+b.horaInicio)?1:-1;}).slice(0,14);if(!r.length)return emptyP();
+  var h='<div class="tscroll"><table class="dt"><thead><tr><th>Inicio</th><th>Fin</th><th class="num">Duración</th><th>Transferencista</th><th>Cadena</th><th>Número</th><th>Contacto</th><th>Resultado</th></tr></thead><tbody>';
+  for(var i=0;i<r.length;i++){var x=r[i];var res=x.venta?'<span class="tag sale">'+fmtS(x.total)+'</span>':'<span class="tag nosale">'+x.causal+'</span>';
+    h+='<tr><td class="mono">'+x.horaInicio+'</td><td class="mono">'+x.horaFin+'</td><td class="num mono">'+secToShort(x.durSec)+'</td><td>'+shortName(x.trans)+'</td><td>'+x.cliente+'</td><td class="mono">'+telFmt(x.numero)+'</td><td>'+(x.contacto||'—')+'</td><td>'+res+'</td></tr>';}
+  return h+'</tbody></table></div>';}
+
+/* ===== TIEMPO REAL ===== */
+function toggleLive(){DASH.live=!DASH.live;if(DASH.live)startLive();else stopLive();renderDash();}
+function startLive(){stopLive();
+  DASH.clock=setInterval(function(){var e=document.getElementById('upAt');if(e)e.textContent=clockNow();},1000);
+  if(!DASH.live)return;
+  if(ONLINE){
+    DASH.int=setInterval(function(){
+      if(LOADING)return;
+      cargarDesdeGAS(function(){if(SESSION&&SESSION.role==='admin'&&DASH.view==='panel')renderDash();});
+    },15000);
+  }else{
+    DASH.int=setInterval(function(){injectLive();if(SESSION&&SESSION.role==='admin')renderDash();},9000);
+  }
+}
+function stopLive(){if(DASH.int){clearInterval(DASH.int);DASH.int=null;}if(DASH.clock){clearInterval(DASH.clock);DASH.clock=null;}}
+function injectLive(){
+  var u=ri(1,7);var dur=ri(40,520);var conecto=rnd()<0.85;var venta=conecto&&rnd()<0.5;var lineas=[],tot=0;
+  if(venta){var ns=ri(1,3);for(var s=0;s<ns;s++){var sk=pick(SKUS);var q=ri(1,10);var sub=+(sk.precio*q).toFixed(2);tot+=sub;lineas.push({nm:sk.nm,precio:sk.precio,cantidad:q,subtotal:sub});}}
+  if(!conecto)dur=ri(8,28);var hi=clockNow();
+  RECORDS.push({id:Date.now()+'-live'+ri(1,9999),fecha:todayStr(),trans:'TRANS'+u,cliente:pick(CLIENTS),numero:genMobile(),
+    horaInicio:hi,horaFin:addSecToTime(hi,dur),durSec:dur,venta:venta,contacto:conecto?pick(CONTACTOS):'—',
+    lineas:lineas,total:+tot.toFixed(2),causal:venta?'':(conecto?pick(['Sin presupuesto','Ya cuenta con stock','Precio elevado','Pedir cita / reagendar']):pick(['No contesta','Buzón de voz']))});
+  /* de tanto en tanto, simula un evento de integridad para mostrar la notificación al admin */
+  if(rnd()<0.22){
+    var ev=pick([
+      {t:'App sospechosa detectada',d:'Se detectó una app de modificación de hora instalada en el equipo.',s:'high'},
+      {t:'Ubicación simulada (GPS falso)',d:'El equipo reporta una ubicación generada por una app de GPS falso.',s:'high'},
+      {t:'Hora automática desactivada',d:'La opción "Fecha y hora automática" del sistema está apagada.',s:'high'}
+    ]);
+    var tid='TRANS'+ri(1,7);var d=new Date();
+    ALERTS.unshift({id:Date.now()+'-sim'+ri(1,9999),transId:tid,transName:uname(tid),tipo:ev.t,detalle:ev.d,sev:ev.s,origin:'simulacion',
+      fecha:ymd(d),hora:pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()),read:false});
+    notifySystem(ALERTS[0]);
+  }
+}
+
+document.getElementById('p').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('u').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('p').focus();});
+</script>
+</body>
+</html>
